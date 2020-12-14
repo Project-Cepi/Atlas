@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
 
     // implement Vanilla Reimplementation
-    implementation("com.github.Minestom:VanillaReimplementation")
+    implementation("com.github.Minestom:VanillaReimplementation:6c08240db3")
 }
 
 tasks.withType<Test> {
