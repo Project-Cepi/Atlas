@@ -1,2 +1,2 @@
-# ExampleExtension
- An example extension for Minestom based off of Sabre/kotlin libs.
+# Atlas
+A instance manager for minestom, allowing the importing of common worlds, generation formats, and saving worlds.
