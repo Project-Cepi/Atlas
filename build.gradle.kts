@@ -38,6 +38,9 @@ dependencies {
 
     // import kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+
+    // implement Vanilla Reimplementation
+    implementation("com.github.Minestom:VanillaReimplementation")
 }
 
 tasks.withType<Test> {
