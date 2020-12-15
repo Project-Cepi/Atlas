@@ -3,7 +3,7 @@ package world.cepi.atlas.world.generator.flat
 import net.minestom.server.instance.block.Block
 
 /**
- * Represents a layer used in [Flat] generation.
+ * Represents a layer used in [FlatGenerator] generation.
  */
 data class FlatLayer(
         /**

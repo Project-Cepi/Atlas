@@ -5,19 +5,20 @@ import net.minestom.server.instance.Chunk
 import net.minestom.server.instance.ChunkGenerator
 import net.minestom.server.instance.ChunkPopulator
 import net.minestom.server.instance.batch.ChunkBatch
+import net.minestom.server.instance.block.Block
 import net.minestom.server.world.biomes.Biome
 import java.util.*
 
 /**
  * Flat world generation based off of [ChunkGenerator]
  */
-class Flat(
-        /**
+class FlatGenerator(
+    /**
          * List of [FlatLayer]s used to generate the flat world.
          */
-        private vararg val layers: FlatLayer,
+        private vararg val layers: FlatLayer = arrayOf(FlatLayer(Block.DIRT, 5)),
 
-        /**
+    /**
          * List of chunk populaters to be used for chunk generation.
          */
         private val chunkPopulators: List<ChunkPopulator> = listOf()

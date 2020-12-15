@@ -1,0 +1,13 @@
+package world.cepi.atlas.world.generator
+
+import net.minestom.server.instance.ChunkGenerator
+import world.cepi.atlas.world.generator.flat.FlatGenerator
+import world.cepi.atlas.world.generator.void.VoidGenerator
+import kotlin.reflect.KClass
+
+enum class Generator(val generator: KClass<out ChunkGenerator>) {
+
+    FLAT(FlatGenerator::class),
+    VOID(VoidGenerator::class)
+
+}
