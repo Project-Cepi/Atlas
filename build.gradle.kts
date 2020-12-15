@@ -41,6 +41,9 @@ dependencies {
 
     // implement Vanilla Reimplementation
     implementation("com.github.Minestom:VanillaReimplementation:6c08240db3")
+
+    // implement KStom
+    implementation("com.github.Project-Cepi:KStom:latest")
 }
 
 tasks.withType<Test> {
