@@ -1,4 +1,4 @@
-package world.cepi.example.generator.loader
+package world.cepi.atlas.world.loader
 
 import net.minestom.server.MinecraftServer
 import net.minestom.server.data.Data

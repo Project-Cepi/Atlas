@@ -1,4 +1,4 @@
-package world.cepi.example
+package world.cepi.atlas
 
 class AtlasWorld(val name: String) {
 }

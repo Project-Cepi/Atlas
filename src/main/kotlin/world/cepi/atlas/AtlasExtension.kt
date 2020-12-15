@@ -1,8 +1,8 @@
-package world.cepi.example
+package world.cepi.atlas
 
 import net.minestom.server.MinecraftServer
 import net.minestom.server.extensions.Extension;
-import world.cepi.example.commands.AtlasCommand
+import world.cepi.atlas.commands.AtlasCommand
 
 class AtlasExtension : Extension() {
 

@@ -1,7 +1,6 @@
-package world.cepi.example.generator.loader
+package world.cepi.atlas.world.loader
 
 import net.minestom.server.instance.IChunkLoader
-import world.cepi.example.generator.loader.AnvilChunkLoader
 import kotlin.reflect.KClass
 
 enum class Loader(val loader: KClass<out IChunkLoader>) {

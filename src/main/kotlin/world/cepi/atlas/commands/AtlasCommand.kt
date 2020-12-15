@@ -1,4 +1,4 @@
-package world.cepi.example.commands
+package world.cepi.atlas.commands
 
 import net.minestom.server.command.builder.Command
 
