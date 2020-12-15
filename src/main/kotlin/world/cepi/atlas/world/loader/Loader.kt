@@ -4,9 +4,13 @@ import net.minestom.server.instance.IChunkLoader
 import net.minestom.server.instance.MinestomBasicChunkLoader
 import kotlin.reflect.KClass
 
-enum class Loader(val loader: KClass<out IChunkLoader>) {
+/** The loaders and the data storage method they use. */
+enum class Loader(val loader: KClass<out IChunkLoader>, val loaderType: LoaderType) {
 
-    ANVIL(AnvilChunkLoader::class),
-    MINESTOM(MinestomBasicChunkLoader::class)
+    /** Loads the anvil based format*/
+    ANVIL(AnvilChunkLoader::class, LoaderType.PHYSICAL),
+
+    /** Loads a world from the minestom data container. */
+    MINESTOM(MinestomBasicChunkLoader::class, LoaderType.MINESTOM)
 
 }

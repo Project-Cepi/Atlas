@@ -13,15 +13,11 @@ import java.util.*
  * Flat world generation based off of [ChunkGenerator]
  */
 class FlatGenerator(
-    /**
-         * List of [FlatLayer]s used to generate the flat world.
-         */
-        private vararg val layers: FlatLayer = arrayOf(FlatLayer(Block.DIRT, 5)),
+    /** List of [FlatLayer]s used to generate the flat world. */
+    private vararg val layers: FlatLayer = arrayOf(FlatLayer(Block.DIRT, 5)),
 
-    /**
-         * List of chunk populaters to be used for chunk generation.
-         */
-        private val chunkPopulators: List<ChunkPopulator> = listOf()
+    /** List of chunk populaters to be used for chunk generation. */
+    private val chunkPopulators: List<ChunkPopulator> = listOf()
 ) : ChunkGenerator {
 
     override fun generateChunkData(batch: ChunkBatch, chunkX: Int, chunkZ: Int) {
