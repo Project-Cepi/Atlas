@@ -43,7 +43,7 @@ dependencies {
     implementation("com.github.Minestom:VanillaReimplementation:6c08240db3")
 
     // implement KStom
-    implementation("com.github.Project-Cepi:KStom:latest")
+    implementation("com.github.Project-Cepi:KStom:main-SNAPSHOT")
 }
 
 tasks.withType<Test> {
