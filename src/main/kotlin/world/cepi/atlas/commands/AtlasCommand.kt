@@ -63,7 +63,7 @@ class AtlasCommand : Command("atlas") {
             }
         }
 
-        addSyntax(tp) { sender, args ->
+        addSyntax(tp) { sender ->
             if (sender !is Player) {
                 sender.sendMessage("You are not a player!")
                 return@addSyntax
@@ -75,7 +75,7 @@ class AtlasCommand : Command("atlas") {
             }
         }
 
-        addSyntax(setspawn) { sender, args ->
+        addSyntax(setspawn) { sender ->
 
             if (sender !is Player) {
                 sender.sendMessage("You are not a player!")
