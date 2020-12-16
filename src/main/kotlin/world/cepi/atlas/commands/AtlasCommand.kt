@@ -1,8 +1,6 @@
 package world.cepi.atlas.commands
 
 import net.minestom.server.MinecraftServer
-import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.Arguments
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.data.DataImpl
