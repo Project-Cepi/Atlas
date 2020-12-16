@@ -8,6 +8,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.data.DataImpl
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
+import net.minestom.server.utils.Position
 import world.cepi.kstom.addSyntax
 import world.cepi.kstom.arguments.asSubcommand
 import java.util.*
@@ -49,8 +50,31 @@ class AtlasCommand : Command("atlas") {
             setSpawn(sender, instance)
         }
 
-        addSyntax(tp, instances) { ->
+        addSyntax(tp, instances) { sender, args ->
+            if (sender !is Player) {
+                sender.sendMessage("You are not a player!")
+                return@addSyntax
+            }
 
+            val instance = getInstance(UUID.fromString(args.getString("instance")))
+
+            sender.setInstance(instance)
+            instance.data?.get<Position>("spawn")?.let {
+                sender.teleport(it)
+                sender.sendMessage("Teleported to the instance's spawn!")
+            }
+        }
+
+        addSyntax(tp) { sender, args ->
+            if (sender !is Player) {
+                sender.sendMessage("You are not a player!")
+                return@addSyntax
+            }
+
+            sender.instance?.data?.get<Position>("spawn")?.let {
+                sender.teleport(it)
+                sender.sendMessage("Teleported to the instance's spawn!")
+            }
         }
 
         addSyntax(setspawn) { sender, args ->
