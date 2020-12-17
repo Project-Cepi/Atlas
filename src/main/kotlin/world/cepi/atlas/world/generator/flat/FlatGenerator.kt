@@ -9,9 +9,7 @@ import net.minestom.server.instance.block.Block
 import net.minestom.server.world.biomes.Biome
 import java.util.*
 
-/**
- * Flat world generation based off of [ChunkGenerator]
- */
+/** Flat world generation based off of [ChunkGenerator] */
 class FlatGenerator(
     /** List of [FlatLayer]s used to generate the flat world. */
     private vararg val layers: FlatLayer = arrayOf(FlatLayer(Block.DIRT, 5)),

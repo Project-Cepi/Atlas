@@ -5,9 +5,9 @@ import world.cepi.atlas.world.generator.flat.FlatGenerator
 import world.cepi.atlas.world.generator.void.VoidGenerator
 import kotlin.reflect.KClass
 
-enum class Generator(val generator: KClass<out ChunkGenerator>) {
+enum class Generator(val generator: (String) -> ChunkGenerator) {
 
-    FLAT(FlatGenerator::class),
-    VOID(VoidGenerator::class)
+    FLAT({ FlatGenerator()}),
+    VOID({ VoidGenerator()})
 
 }
