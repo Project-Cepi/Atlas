@@ -11,6 +11,6 @@ enum class Loader(val loader: KClass<out IChunkLoader>, val loaderType: LoaderTy
     ANVIL(AnvilChunkLoader::class, LoaderType.PHYSICAL),
 
     /** Loads a world from the minestom data container. */
-    MINESTOM(MinestomBasicChunkLoader::class, LoaderType.MINESTOM)
+    MINESTOM(NamedInstanceChunkLoader::class, LoaderType.MINESTOM)
 
 }
