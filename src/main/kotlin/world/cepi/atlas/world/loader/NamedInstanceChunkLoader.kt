@@ -13,11 +13,11 @@ import java.io.*
  *
  * @author Krystilize
  */
-class NamedInstanceChunkLoader(private val name: String): IChunkLoader {
+class NamedInstanceChunkLoader(private val regionFolder: String): IChunkLoader {
     override fun loadChunk(instance: Instance, chunkX: Int, chunkZ: Int, callback: ChunkCallback?): Boolean {
-        File("Saves/Instances/$name/").mkdirs()
+        File(regionFolder).mkdirs()
         return try {
-            val `is` = FileInputStream("Saves/Instances/$name/chunk.$chunkX.$chunkZ.save")
+            val `is` = FileInputStream("$regionFolder/chunk.$chunkX.$chunkZ.save")
             val ois = ObjectInputStream(`is`)
             val chunkData = ois.readObject() as ByteArray
             val chunk = (instance as InstanceContainer).chunkSupplier.createChunk(null, chunkX, chunkZ)
@@ -42,8 +42,8 @@ class NamedInstanceChunkLoader(private val name: String): IChunkLoader {
     override fun saveChunk(chunk: Chunk, callback: Runnable?) {
         val chunkX = chunk.chunkX
         val chunkZ = chunk.chunkZ
-        val fileName = "instances/$name/chunk.$chunkX.$chunkZ.save"
-        File("instances/$name/").mkdirs()
+        val fileName = "${regionFolder}chunk.$chunkX.$chunkZ.save"
+        File(regionFolder).mkdirs()
         try {
             val file = File(fileName)
             if (file.isFile)
@@ -64,8 +64,4 @@ class NamedInstanceChunkLoader(private val name: String): IChunkLoader {
 
     override fun supportsParallelSaving() = true
     override fun supportsParallelLoading() = true
-
-    init {
-        File("instances/$name/").mkdirs()
-    }
 }
