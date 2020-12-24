@@ -28,7 +28,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 
-class AnvilChunkLoader(private val regionFolder: StorageLocation) : IChunkLoader {
+class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
     private val voidBiome: Biome?
     private val alreadyLoaded = ConcurrentHashMap<String, RegionFile?>()
     override fun loadChunk(instance: Instance, chunkX: Int, chunkZ: Int, callback: ChunkCallback?): Boolean {
@@ -80,7 +80,7 @@ class AnvilChunkLoader(private val regionFolder: StorageLocation) : IChunkLoader
         val regionZ = chunkZ.chunkToRegion()
         return alreadyLoaded.computeIfAbsent(RegionFile.createFileName(regionX, regionZ)) { n: String ->
             try {
-                val regionFile = File(regionFolder.location, n)
+                val regionFile = File(regionFolder, n)
                 if (!regionFile.exists()) {
                     return@computeIfAbsent null
                 }
@@ -164,7 +164,7 @@ class AnvilChunkLoader(private val regionFolder: StorageLocation) : IChunkLoader
                 val regionX = chunkX.chunkToRegion()
                 val regionZ = chunkZ.chunkToRegion()
                 val n = RegionFile.createFileName(regionX, regionZ)
-                val regionFile = File(regionFolder.location, n)
+                val regionFile = File(regionFolder, n)
                 try {
                     if (!regionFile.exists()) {
                         if (!regionFile.parentFile.exists()) {

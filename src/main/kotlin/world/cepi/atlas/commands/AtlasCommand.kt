@@ -90,10 +90,10 @@ class AtlasCommand : Command("atlas") {
         return MinecraftServer.getInstanceManager().instances.map { it.uniqueId.toString() }.toTypedArray()
     }
 
-    fun getInstance(uuid: UUID) = MinecraftServer.getInstanceManager().instances
+    private fun getInstance(uuid: UUID): Instance = MinecraftServer.getInstanceManager().instances
         .first { it.uniqueId == uuid }
 
-    fun setSpawn(player: Player, instance: Instance?) {
+    private fun setSpawn(player: Player, instance: Instance?) {
         if (player.instance == null) {
             player.sendMessage("This instance does not exist!")
             return
