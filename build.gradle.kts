@@ -1,7 +1,7 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.10"
-    kotlin("plugin.serialization") version "1.4.10"
+    id("org.jetbrains.kotlin.jvm") version "1.4.21"
+    kotlin("plugin.serialization") version "1.4.21"
     maven
 
     // Apply the application plugin to add support for building a jar
@@ -38,9 +38,6 @@ dependencies {
 
     // import kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
-
-    // implement Vanilla Reimplementation
-    implementation("com.github.Minestom:VanillaReimplementation:6c08240db3")
 
     // implement KStom
     implementation("com.github.Project-Cepi:KStom:main-SNAPSHOT")

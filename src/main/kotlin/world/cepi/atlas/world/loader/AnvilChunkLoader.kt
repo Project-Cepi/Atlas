@@ -232,9 +232,9 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             nbt.setInt("y", y)
             nbt.setInt("z", z)
             nbt.setByte("keepPacked", 0.toByte())
-            val block = Block.fromStateId(customBlock.defaultBlockStateId)
+            val block = Block.fromStateId(customBlock!!.defaultBlockStateId)
             val data = chunk.getBlockData(ChunkUtils.getBlockIndex(x, y, z))
-            customBlock.writeBlockEntity(position, data, nbt)
+            customBlock!!.writeBlockEntity(position, data, nbt)
             if (block.hasBlockEntity()) {
                 nbt.setString("id", block.blockEntityName.toString())
                 tileEntities.add(nbt)

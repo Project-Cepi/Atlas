@@ -7,6 +7,7 @@ import net.minestom.server.data.DataImpl
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
+import world.cepi.atlas.AtlasInstance
 import world.cepi.kstom.addSyntax
 import world.cepi.kstom.arguments.asSubcommand
 import java.util.*
@@ -25,6 +26,8 @@ class AtlasCommand : Command("atlas") {
         val instances = ArgumentType.DynamicWord("instance").fromRestrictions { uuid ->
             return@fromRestrictions MinecraftServer.getInstanceManager().instances.any { it.uniqueId.toString() == uuid }
         }
+
+        val worldID = ArgumentType.Word("worldID")
 
         addSyntax(list) { sender ->
             MinecraftServer.getInstanceManager().instances.forEach {
@@ -56,11 +59,14 @@ class AtlasCommand : Command("atlas") {
 
             val instance = getInstance(UUID.fromString(args.getString("instance")))
 
-            sender.setInstance(instance)
+            if (sender.instance != instance)
+                sender.setInstance(instance)
             instance.data?.get<Position>("spawn")?.let {
                 sender.teleport(it)
-                sender.sendMessage("Teleported to the instance's spawn!")
+            } ?: let {
+                sender.teleport(Position(0f, 300f, 0f))
             }
+            sender.sendMessage("Teleported to the instance's spawn!")
         }
 
         addSyntax(tp) { sender ->
@@ -83,6 +89,17 @@ class AtlasCommand : Command("atlas") {
             }
 
             setSpawn(sender, sender.instance)
+        }
+
+        addSyntax(generate, worldID) { sender, args ->
+
+            val instanceName = args.getWord("worldID")
+
+            val instance = AtlasInstance(instanceName)
+            AtlasInstance.add(instance)
+            instance.load()
+            sender.sendMessage("Instance $instanceName added!")
+
         }
     }
 
