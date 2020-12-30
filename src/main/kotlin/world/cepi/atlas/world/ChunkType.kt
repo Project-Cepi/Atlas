@@ -10,10 +10,10 @@ enum class ChunkType {
     DYNAMIC,
 
     /**
-     * If the chunk is static,
+     * If the chunk is passed,
      * its passed straight to the player and can still be modified locally,
      * but players that haven't loaded those changes will not see them'
      */
-    STATIC
+    PASSED
 
 }
