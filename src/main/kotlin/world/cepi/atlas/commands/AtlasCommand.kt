@@ -1,6 +1,7 @@
 package world.cepi.atlas.commands
 
 import net.minestom.server.MinecraftServer
+import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.data.DataImpl
@@ -40,6 +41,12 @@ class AtlasCommand : Command("atlas") {
             sender.sendMessage("UUID: ${instance.uniqueId}")
         }
 
+        addSyntax(info) { sender ->
+
+            val player = sender as Player
+            player.sendMessage("UUID: ${player.instance?.uniqueId}")
+        }
+
         addSyntax(setspawn, instances) { sender, args ->
 
             if (sender !is Player) {
@@ -47,7 +54,7 @@ class AtlasCommand : Command("atlas") {
                 return@addSyntax
             }
 
-            val instance = getInstance(UUID.fromString(args.getString("instance")))
+            val instance = getInstance(UUID.fromString(args.get(instances)))
             setSpawn(sender, instance)
         }
 
@@ -57,15 +64,17 @@ class AtlasCommand : Command("atlas") {
                 return@addSyntax
             }
 
-            val instance = getInstance(UUID.fromString(args.getString("instance")))
+            val instance = getInstance(UUID.fromString(args.get(instances)))
 
-            if (sender.instance != instance)
+            if (sender.instance?.uniqueId != instance.uniqueId)
                 sender.setInstance(instance)
+
             instance.data?.get<Position>("spawn")?.let {
                 sender.teleport(it)
             } ?: let {
                 sender.teleport(Position(0f, 300f, 0f))
             }
+
             sender.sendMessage("Teleported to the instance's spawn!")
         }
 
@@ -93,17 +102,15 @@ class AtlasCommand : Command("atlas") {
 
         addSyntax(generate, worldID) { sender, args ->
 
-            val instanceName = args.getWord("worldID")
+            val instanceName = args.get(worldID)
 
             val instance = AtlasInstance(instanceName)
-            AtlasInstance.add(instance)
-            instance.load()
-            sender.sendMessage("Instance $instanceName added!")
+            sender.sendMessage("Instance $instanceName (${instance.instanceContainer.uniqueId}) added!")
 
         }
     }
 
-    override fun onDynamicWrite(text: String): Array<String> {
+    override fun onDynamicWrite(sender: CommandSender, text: String): Array<out String> {
         return MinecraftServer.getInstanceManager().instances.map { it.uniqueId.toString() }.toTypedArray()
     }
 

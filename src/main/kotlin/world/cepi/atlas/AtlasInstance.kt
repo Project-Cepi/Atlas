@@ -2,9 +2,11 @@ package world.cepi.atlas
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.minestom.server.MinecraftServer
+import net.minestom.server.instance.InstanceContainer
 import world.cepi.atlas.world.ChunkType
 import world.cepi.atlas.world.generator.Generator
 import world.cepi.atlas.world.loader.Loader
@@ -28,38 +30,44 @@ data class AtlasInstance(
         val autoChunkLoad: Boolean = true
 ) {
 
-        fun load() {
+        // DO NOT remove the lateinit. This is due to Transient breaking without the keyword.
+        @Transient
+        lateinit var instanceContainer: InstanceContainer
+
+        init {
                 val instanceManager = MinecraftServer.getInstanceManager()
 
-                val instance = instanceManager.createInstanceContainer()
+                instanceContainer = instanceManager.createInstanceContainer()
 
-                instance.chunkGenerator = generator.generator.invoke("")
-                instance.enableAutoChunkLoad(autoChunkLoad)
+                instanceContainer.chunkGenerator = generator.generator.invoke("")
+                instanceContainer.enableAutoChunkLoad(autoChunkLoad)
+
+                instances.add(this)
+
+                update()
+        }
+
+        fun unregister() {
+                instances.remove(this)
+
+                MinecraftServer.getInstanceManager().unregisterInstance(this.instanceContainer)
+
+                update()
         }
 
         companion object {
 
-                private val serilalizer: KSerializer<List<AtlasInstance>> = ListSerializer(AtlasInstance.serializer())
+                private val serializer: KSerializer<List<AtlasInstance>> = ListSerializer(serializer())
 
-                val instanceFile = File("./instances/instances.json")
-                val instanceFolder = File("./instances")
+                private val instanceFile = File("./instances/instances.json")
+                private val instanceFolder = File("./instances")
 
                 private val instances: MutableList<AtlasInstance> = mutableListOf()
-
-                fun add(instance: AtlasInstance) {
-                        instances.add(instance)
-                        update()
-                }
-
-                fun remove(instance: AtlasInstance) {
-                        instances.remove(instance)
-                        update()
-                }
 
                 fun update() {
                         if (!instanceFile.exists())
                                 instanceFile.createNewFile()
-                        instanceFile.writeText(Json.encodeToString(serilalizer, instances))
+                        instanceFile.writeText(Json.encodeToString(serializer, instances))
                 }
 
         }
