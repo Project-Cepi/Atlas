@@ -50,6 +50,7 @@ data class AtlasInstance(
                 update()
         }
 
+        /** Unregister an atlas instance. */
         fun unregister() {
                 instances.remove(this)
 
@@ -63,7 +64,6 @@ data class AtlasInstance(
                 private val serializer: KSerializer<List<AtlasInstance>> = ListSerializer(serializer())
 
                 private val instanceFile = File("./instances/instances.json")
-                private val instanceFolder = File("./instances")
 
                 private val instances: MutableList<AtlasInstance> = mutableListOf()
 

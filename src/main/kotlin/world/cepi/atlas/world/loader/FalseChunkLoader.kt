@@ -5,6 +5,7 @@ import net.minestom.server.instance.IChunkLoader
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.chunk.ChunkCallback
 
+/** It doesn't load chunks. */
 class FalseChunkLoader(
     /** This is to make sure the constructor doesn't throw an exception. */
     @Suppress("UNUSED_PARAMETER") dummyPath: String
