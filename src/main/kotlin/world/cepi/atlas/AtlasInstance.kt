@@ -12,6 +12,7 @@ import world.cepi.atlas.world.generator.Generator
 import world.cepi.atlas.world.loader.Loader
 import java.util.*
 import java.io.File
+import kotlin.reflect.full.primaryConstructor
 
 /** Represents an instance that is owned by the Atlas loader*/
 @Serializable
@@ -25,7 +26,7 @@ data class AtlasInstance(
         /** If the chunks should save to disk. */
         val shouldSave: Boolean = false,
         /** How a world should be represented in a file. */
-        val loader: Loader = Loader.MINESTOM,
+        val loader: Loader = Loader.FALSE,
         /** If the instance should automatically load chunks */
         val autoChunkLoad: Boolean = true
 ) {
@@ -41,6 +42,8 @@ data class AtlasInstance(
 
                 instanceContainer.chunkGenerator = generator.generator.invoke("")
                 instanceContainer.enableAutoChunkLoad(autoChunkLoad)
+
+                instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./instances/$name")
 
                 instances.add(this)
 

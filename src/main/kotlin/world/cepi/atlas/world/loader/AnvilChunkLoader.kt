@@ -155,65 +155,65 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     // TODO: find a way to unload MCAFiles when an entire region is unloaded
     override fun saveChunk(chunk: Chunk, callback: Runnable?) {
-        val chunkX = chunk.chunkX
-        val chunkZ = chunk.chunkZ
-        var mcaFile: RegionFile?
-        synchronized(alreadyLoaded) {
-            mcaFile = getMCAFile(chunkX, chunkZ)
-            if (mcaFile == null) {
-                val regionX = chunkX.chunkToRegion()
-                val regionZ = chunkZ.chunkToRegion()
-                val n = RegionFile.createFileName(regionX, regionZ)
-                val regionFile = File(regionFolder, n)
-                try {
-                    if (!regionFile.exists()) {
-                        if (!regionFile.parentFile.exists()) {
-                            regionFile.parentFile.mkdirs()
+        with(chunk) {
+            var mcaFile: RegionFile?
+            synchronized(alreadyLoaded) {
+                mcaFile = getMCAFile(chunkX, chunkZ)
+                if (mcaFile == null) {
+                    val regionX = chunkX.chunkToRegion()
+                    val regionZ = chunkZ.chunkToRegion()
+                    val n = RegionFile.createFileName(regionX, regionZ)
+                    val regionFile = File(regionFolder, n)
+                    try {
+                        if (!regionFile.exists()) {
+                            if (!regionFile.parentFile.exists()) {
+                                regionFile.parentFile.mkdirs()
+                            }
+                            regionFile.createNewFile()
                         }
-                        regionFile.createNewFile()
+                        mcaFile = RegionFile(RandomAccessFile(regionFile, "rw"), regionX, regionZ)
+                        alreadyLoaded[n] = mcaFile!!
+                    } catch (e: AnvilException) {
+                        LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
+                        e.printStackTrace()
+                        return
+                    } catch (e: IOException) {
+                        LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
+                        e.printStackTrace()
+                        return
                     }
-                    mcaFile = RegionFile(RandomAccessFile(regionFile, "rw"), regionX, regionZ)
-                    alreadyLoaded[n] = mcaFile!!
-                } catch (e: AnvilException) {
-                    LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                    e.printStackTrace()
-                    return
-                } catch (e: IOException) {
-                    LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                    e.printStackTrace()
-                    return
                 }
             }
-        }
-        val biomes = IntArray(Chunk.BIOME_COUNT)
-        for (i in biomes.indices) {
-            var biome = chunk.biomes[i]
-            if (biome == null) {
-                biome = voidBiome
+            val biomes = IntArray(Chunk.BIOME_COUNT)
+            for (i in biomes.indices) {
+                var biome = chunk.biomes[i]
+                if (biome == null) {
+                    biome = voidBiome
+                }
+                biomes[i] = biome!!.id
             }
-            biomes[i] = biome!!.id
+            val column = try {
+                mcaFile!!.getOrCreateChunk(chunkX, chunkZ)
+            } catch (e: AnvilException) {
+                LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
+                e.printStackTrace()
+                return
+            } catch (e: IOException) {
+                LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
+                e.printStackTrace()
+                return
+            }
+            save(chunk, column)
+            try {
+                LOGGER.debug("Attempt saving at {} {}", chunkX, chunkZ)
+                mcaFile!!.writeColumn(column)
+            } catch (e: IOException) {
+                LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
+                e.printStackTrace()
+                return
+            }
+            callback?.run()
         }
-        val column = try {
-            mcaFile!!.getOrCreateChunk(chunkX, chunkZ)
-        } catch (e: AnvilException) {
-            LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-            e.printStackTrace()
-            return
-        } catch (e: IOException) {
-            LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-            e.printStackTrace()
-            return
-        }
-        save(chunk, column)
-        try {
-            LOGGER.debug("Attempt saving at {} {}", chunk.chunkX, chunk.chunkZ)
-            mcaFile!!.writeColumn(column)
-        } catch (e: IOException) {
-            LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-            e.printStackTrace()
-            return
-        }
-        callback?.run()
     }
 
     private fun saveTileEntities(chunk: Chunk, fileChunk: ChunkColumn) {
@@ -268,13 +268,9 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
         }
     }
 
-    override fun supportsParallelLoading(): Boolean {
-        return true
-    }
+    override fun supportsParallelLoading() = true
 
-    override fun supportsParallelSaving(): Boolean {
-        return true
-    }
+    override fun supportsParallelSaving() = true
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(AnvilChunkLoader::class.java)
@@ -282,9 +278,8 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     init {
         var defaultBiome = MinecraftServer.getBiomeManager().getByName(NamespaceID.from("minecraft:the_void"))
-        if (defaultBiome == null) {
+        if (defaultBiome == null)
             defaultBiome = Biome.PLAINS
-        }
         voidBiome = defaultBiome
     }
 }
