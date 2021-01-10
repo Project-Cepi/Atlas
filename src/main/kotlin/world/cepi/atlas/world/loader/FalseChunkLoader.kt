@@ -13,4 +13,8 @@ class FalseChunkLoader(
     override fun loadChunk(p0: Instance, p1: Int, p2: Int, p3: ChunkCallback?) = false
 
     override fun saveChunk(p0: Chunk, p1: Runnable?) = Unit
+
+    override fun supportsParallelLoading() = true
+
+    override fun supportsParallelSaving() = true
 }

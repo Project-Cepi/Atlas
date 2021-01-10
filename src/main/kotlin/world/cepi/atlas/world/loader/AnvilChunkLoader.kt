@@ -67,7 +67,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             val batch = instance.createChunkBatch(loadedChunk)
             loadBlocks(instance, chunkX, chunkZ, batch, fileChunk)
             batch.unsafeFlush { c: Chunk ->
-                loadTileEntities(c, chunkX, chunkZ, instance, fileChunk)
+                loadTileEntities(c, chunkX, chunkZ, fileChunk)
                 callback?.accept(c)
             }
             return loadedChunk
@@ -95,7 +95,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
         }
     }
 
-    private fun loadTileEntities(loadedChunk: Chunk, chunkX: Int, chunkZ: Int, instance: Instance, fileChunk: ChunkColumn) {
+    private fun loadTileEntities(loadedChunk: Chunk, chunkX: Int, chunkZ: Int, fileChunk: ChunkColumn) {
         val pos = BlockPosition(0, 0, 0)
         for (te in fileChunk.tileEntities) {
             // String tileEntityID = te.getString("id");
