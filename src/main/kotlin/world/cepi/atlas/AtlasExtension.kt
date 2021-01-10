@@ -10,6 +10,9 @@ class AtlasExtension : Extension() {
 
         MinecraftServer.getCommandManager().register(AtlasCommand())
         AtlasInstance.loadInstances()
+        MinecraftServer.getConnectionManager().addPlayerInitialization {
+            PlayerInstanceLoader.load(it)
+        }
 
         logger.info("[Atlas] has been enabled!")
     }

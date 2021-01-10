@@ -6,7 +6,10 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.minestom.server.MinecraftServer
+import net.minestom.server.data.DataImpl
+import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
+import net.minestom.server.utils.Position
 import world.cepi.atlas.world.ChunkType
 import world.cepi.atlas.world.generator.Generator
 import world.cepi.atlas.world.loader.Loader
@@ -28,7 +31,9 @@ data class AtlasInstance(
         /** How a world should be represented in a file. */
         val loader: Loader = Loader.FALSE,
         /** If the instance should automatically load chunks */
-        val autoChunkLoad: Boolean = true
+        val autoChunkLoad: Boolean = true,
+        /** The spawn of the instance. */
+        val spawn: KPosition = KPosition(0f, 50f, 0f)
 ) {
 
         // DO NOT remove the lateinit. This is due to Transient breaking without the keyword.
@@ -46,6 +51,10 @@ data class AtlasInstance(
                 instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./atlas/$name")
 
                 instances.add(this)
+
+                if (instanceContainer.data == null) instanceContainer.data = DataImpl()
+                instanceContainer.data!!.set("spawn", spawn.asPosition)
+                instanceContainer.data!!.set("atlas", this)
 
                 update()
         }
@@ -83,4 +92,14 @@ data class AtlasInstance(
                 }
 
         }
+}
+
+val Instance.isAtlas: Boolean get() = run {
+        if (this.data == null) true
+        else this.data!!.get<AtlasInstance>("atlas") != null
+}
+
+val Instance.asAtlas: AtlasInstance? get() = run {
+        if (this.data == null) null
+        else this.data?.get<AtlasInstance>("atlas")
 }
