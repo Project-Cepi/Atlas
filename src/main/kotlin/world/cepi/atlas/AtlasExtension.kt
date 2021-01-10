@@ -9,6 +9,7 @@ class AtlasExtension : Extension() {
     override fun initialize() {
 
         MinecraftServer.getCommandManager().register(AtlasCommand())
+        AtlasInstance.loadInstances()
 
         logger.info("[Atlas] has been enabled!")
     }

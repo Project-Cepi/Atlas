@@ -43,7 +43,7 @@ data class AtlasInstance(
                 instanceContainer.chunkGenerator = generator.generator.invoke("")
                 instanceContainer.enableAutoChunkLoad(autoChunkLoad)
 
-                instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./instances/$name")
+                instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./atlas/$name")
 
                 instances.add(this)
 
@@ -63,7 +63,8 @@ data class AtlasInstance(
 
                 private val serializer: KSerializer<List<AtlasInstance>> = ListSerializer(serializer())
 
-                private val instanceFile = File("./instances/instances.json")
+                private val instanceFile = File("./atlas/atlas.json")
+                private val instanceFolder = File("./atlas")
 
                 private val instances: MutableList<AtlasInstance> = mutableListOf()
 
@@ -71,6 +72,14 @@ data class AtlasInstance(
                         if (!instanceFile.exists())
                                 instanceFile.createNewFile()
                         instanceFile.writeText(Json.encodeToString(serializer, instances))
+                }
+
+                fun loadInstances() {
+                        Json.decodeFromString(serializer, instanceFile.readText())
+                }
+
+                init {
+                        instanceFolder.mkdirs()
                 }
 
         }

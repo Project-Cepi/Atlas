@@ -9,6 +9,7 @@ import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
 import world.cepi.atlas.AtlasInstance
+import world.cepi.atlas.world.loader.Loader
 import world.cepi.kstom.addSyntax
 import world.cepi.kstom.arguments.asSubcommand
 import java.util.*
@@ -28,7 +29,8 @@ class AtlasCommand : Command("atlas") {
             return@fromRestrictions MinecraftServer.getInstanceManager().instances.any { it.uniqueId.toString() == uuid }
         }
 
-        val worldID = ArgumentType.Word("worldID")
+        val loaders = ArgumentType.Word("loader").from(*Loader.values().map { it.name }.toTypedArray())
+        loaders.defaultValue = Loader.FALSE.name
 
         addSyntax(list) { sender ->
             MinecraftServer.getInstanceManager().instances.forEach {
@@ -100,12 +102,10 @@ class AtlasCommand : Command("atlas") {
             setSpawn(sender, sender.instance)
         }
 
-        addSyntax(generate, worldID) { sender, args ->
+        addSyntax(generate, loaders) { sender, args ->
 
-            val instanceName = args.get(worldID)
-
-            val instance = AtlasInstance(instanceName)
-            sender.sendMessage("Instance $instanceName (${instance.instanceContainer.uniqueId}) added!")
+            val instance = AtlasInstance(loader = Loader.valueOf(args.get(loaders).toUpperCase()))
+            sender.sendMessage("Instance (${instance.instanceContainer.uniqueId}) added!")
 
         }
     }
