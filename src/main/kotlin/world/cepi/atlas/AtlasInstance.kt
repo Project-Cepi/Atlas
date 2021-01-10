@@ -17,7 +17,10 @@ import java.util.*
 import java.io.File
 import kotlin.reflect.full.primaryConstructor
 
-/** Represents an instance that is owned by the Atlas loader*/
+/**
+ * Represents an instance that is owned by the Atlas loader.
+ * Essentially a wrapper class for Minestom instances.
+ */
 @Serializable
 data class AtlasInstance(
         /** The human-readable name of the world. Solely used for command shortening purposes */
@@ -70,35 +73,45 @@ data class AtlasInstance(
 
         companion object {
 
+                /** The AtlasInstance list serializer. */
                 private val serializer: KSerializer<List<AtlasInstance>> = ListSerializer(serializer())
 
+                /** A file representation of the instance configuration for atlas*/
                 private val instanceFile = File("./atlas/atlas.json")
+
+                /** The folder where all atlas instances are contained*/
                 private val instanceFolder = File("./atlas")
 
+                /** The current cache of the AtlasInstances. */
                 private val instances: MutableList<AtlasInstance> = mutableListOf()
 
+                /** Update the config file of Atlas. Refer to [instanceFile] for more information*/
                 fun update() {
                         if (!instanceFile.exists())
                                 instanceFile.createNewFile()
                         instanceFile.writeText(Json.encodeToString(serializer, instances))
                 }
 
+                /** Load all instances from the [instanceFile] configuration. */
                 fun loadInstances() {
                         Json.decodeFromString(serializer, instanceFile.readText())
                 }
 
                 init {
                         instanceFolder.mkdirs()
+                        if (!instanceFile.exists()) update()
                 }
 
         }
 }
 
+/** Check if a Minestom instance is registered as an atlas instance. */
 val Instance.isAtlas: Boolean get() = run {
         if (this.data == null) true
         else this.data!!.get<AtlasInstance>("atlas") != null
 }
 
+/** Gets an Atlas Instance, as long as the Minestom Instance is one. */
 val Instance.asAtlas: AtlasInstance? get() = run {
         if (this.data == null) null
         else this.data?.get<AtlasInstance>("atlas")
