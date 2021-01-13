@@ -9,7 +9,6 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.instance.batch.ChunkBatch
 import net.minestom.server.instance.block.Block
 import net.minestom.server.registry.Registries
-import net.minestom.server.storage.StorageLocation
 import net.minestom.server.utils.BlockPosition
 import net.minestom.server.utils.NamespaceID
 import net.minestom.server.utils.chunk.ChunkCallback
@@ -29,47 +28,52 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
-    private val voidBiome: Biome?
+
+    private val voidBiome: Biome =
+            MinecraftServer.getBiomeManager().getByName(NamespaceID.from("minecraft:the_void")) ?: Biome.PLAINS
+
     private val alreadyLoaded = ConcurrentHashMap<String, RegionFile?>()
+
     override fun loadChunk(instance: Instance, chunkX: Int, chunkZ: Int, callback: ChunkCallback?): Boolean {
+
         LOGGER.debug("Attempt loading at {} {}", chunkX, chunkZ)
+
         try {
             val chunk = loadMCA(instance, chunkX, chunkZ, callback)
             return chunk != null
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: AnvilException) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
+
         return false
     }
 
-    @Throws(IOException::class, AnvilException::class)
     private fun loadMCA(instance: Instance, chunkX: Int, chunkZ: Int, callback: ChunkCallback?): Chunk? {
+
         val mcaFile = getMCAFile(chunkX, chunkZ)
         val fileChunk = mcaFile!!.getChunk(chunkX, chunkZ)
+
         if (fileChunk != null) {
             val biomes = arrayOfNulls<Biome>(Chunk.BIOME_COUNT)
             if (fileChunk.generationStatus > GenerationStatus.Biomes) {
                 val fileChunkBiomes = fileChunk.biomes
                 for (i in fileChunkBiomes!!.indices) {
                     val id = fileChunkBiomes[i]
-                    var biome = MinecraftServer.getBiomeManager().getById(id)
-                    if (biome == null) {
-                        biome = voidBiome
-                    }
-                    biomes[i] = biome
+                    biomes[i] = MinecraftServer.getBiomeManager().getById(id) ?: voidBiome
                 }
-            } else {
+            } else
                 Arrays.fill(biomes, voidBiome)
-            }
+
+
             val loadedChunk: Chunk = DynamicChunk(biomes, chunkX, chunkZ)
             val batch = instance.createChunkBatch(loadedChunk)
+
             loadBlocks(instance, chunkX, chunkZ, batch, fileChunk)
             batch.unsafeFlush { c: Chunk ->
                 loadTileEntities(c, chunkX, chunkZ, fileChunk)
                 callback?.accept(c)
             }
+
             return loadedChunk
         }
         return null
@@ -98,7 +102,6 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
     private fun loadTileEntities(loadedChunk: Chunk, chunkX: Int, chunkZ: Int, fileChunk: ChunkColumn) {
         val pos = BlockPosition(0, 0, 0)
         for (te in fileChunk.tileEntities) {
-            // String tileEntityID = te.getString("id");
             val x = te.getInt("x")!! + chunkX * 16
             val y = te.getInt("y")!!
             val z = te.getInt("z")!! + chunkZ * 16
@@ -108,7 +111,6 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
                 pos.y = y
                 pos.z = z
                 val data = loadedChunk.getBlockData(ChunkUtils.getBlockIndex(x, y, z))
-                // data = (block).readBlockEntity(te, instance, pos, data)
                 loadedChunk.setBlockData(x, y, z, data)
             }
         }
@@ -119,31 +121,39 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             for (z in 0 until Chunk.CHUNK_SIZE_Z) {
                 for (y in 0 until Chunk.CHUNK_SIZE_Y) {
                     try {
+
                         val (name, properties) = fileChunk.getBlockState(x, y, z)
-                        val rBlock = Registries.getBlock(name)
+                        val registryBlock = Registries.getBlock(name)
                         var customBlockId: Short = 0
                         var data: Data? = null
-                        val customBlock = MinecraftServer.getBlockManager().getCustomBlock(rBlock.blockId)
+                        val customBlock = MinecraftServer.getBlockManager().getCustomBlock(registryBlock.blockId)
+
                         if (customBlock != null) {
-                            customBlockId = rBlock.blockId
+                            customBlockId = registryBlock.blockId
                             data = customBlock.createData(instance, BlockPosition(x + chunkX * 16, y, z + chunkZ * 16), null)
                         }
+
                         if (properties.isNotEmpty()) {
-                            val propertiesArray: MutableList<String> = ArrayList()
-                            properties.forEach { (key: String, value2: String) -> propertiesArray.add(key + "=" + value2.replace("\"", "")) }
-                            propertiesArray.sort()
-                            val block = rBlock.withProperties(*propertiesArray.toTypedArray())
-                            if (customBlock != null) {
+
+                            val propertiesArray = properties
+                                    .map { (key, value ) ->
+                                        key + "=" + value.replace("\"", "") }
+                                    .sorted()
+
+                            val block = registryBlock.withProperties(*propertiesArray.toTypedArray())
+
+                            if (customBlock != null)
                                 batch.setSeparateBlocks(x, y, z, block, customBlockId, data)
-                            } else {
+                            else
                                 batch.setBlockStateId(x, y, z, block)
-                            }
+
                         } else {
-                            if (customBlock != null) {
-                                batch.setSeparateBlocks(x, y, z, rBlock.blockId, customBlockId, data)
-                            } else {
-                                batch.setBlock(x, y, z, rBlock)
-                            }
+
+                            if (customBlock != null)
+                                batch.setSeparateBlocks(x, y, z, registryBlock.blockId, customBlockId, data)
+                            else
+                                batch.setBlock(x, y, z, registryBlock)
+
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -186,32 +196,27 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             }
             val biomes = IntArray(Chunk.BIOME_COUNT)
             for (i in biomes.indices) {
-                var biome = chunk.biomes[i]
-                if (biome == null) {
-                    biome = voidBiome
-                }
-                biomes[i] = biome!!.id
+                val biome = chunk.biomes[i] ?: voidBiome
+                biomes[i] = biome.id
             }
             val column = try {
                 mcaFile!!.getOrCreateChunk(chunkX, chunkZ)
-            } catch (e: AnvilException) {
-                LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                e.printStackTrace()
-                return
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
                 e.printStackTrace()
                 return
             }
+
             save(chunk, column)
             try {
                 LOGGER.debug("Attempt saving at {} {}", chunkX, chunkZ)
                 mcaFile!!.writeColumn(column)
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
                 e.printStackTrace()
                 return
             }
+
             callback?.run()
         }
     }
@@ -238,9 +243,8 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             if (block.hasBlockEntity()) {
                 nbt.setString("id", block.blockEntityName.toString())
                 tileEntities.add(nbt)
-            } else {
+            } else
                 LOGGER.warn("Tried to save block entity for a block which is not a block entity? Block is {} at {},{},{}", customBlock, x, y, z)
-            }
         }
         fileChunk.tileEntities = tileEntities
     }
@@ -274,12 +278,5 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(AnvilChunkLoader::class.java)
-    }
-
-    init {
-        var defaultBiome = MinecraftServer.getBiomeManager().getByName(NamespaceID.from("minecraft:the_void"))
-        if (defaultBiome == null)
-            defaultBiome = Biome.PLAINS
-        voidBiome = defaultBiome
     }
 }
