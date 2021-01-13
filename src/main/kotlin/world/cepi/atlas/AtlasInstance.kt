@@ -36,7 +36,9 @@ data class AtlasInstance(
         /** If the instance should automatically load chunks */
         val autoChunkLoad: Boolean = true,
         /** The spawn of the instance. */
-        val spawn: KPosition = KPosition(0f, 50f, 0f)
+        val spawn: KPosition = KPosition(0f, 50f, 0f),
+        /** The time rate of the instance */
+        val timeRate: Int = 0
 ) {
 
         // DO NOT remove the lateinit. This is due to Transient breaking without the keyword.
@@ -52,6 +54,8 @@ data class AtlasInstance(
                 instanceContainer.enableAutoChunkLoad(autoChunkLoad)
 
                 instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./atlas/$name")
+
+                instanceContainer.timeRate = timeRate
 
                 instances.add(this)
 
