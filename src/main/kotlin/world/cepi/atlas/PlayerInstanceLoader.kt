@@ -7,12 +7,12 @@ import world.cepi.kstom.addEventCallback
 
 object PlayerInstanceLoader {
     fun load(player: Player) {
-        player.addEventCallback(PlayerLoginEvent::class) { event ->
+        player.addEventCallback(PlayerLoginEvent::class) {
             if (MinecraftServer.getInstanceManager().instances.any { !it.isAtlas }) return@addEventCallback
 
             val atlasInstance = MinecraftServer.getInstanceManager().instances.first().asAtlas!!
 
-            event.setSpawningInstance(atlasInstance.instanceContainer)
+            setSpawningInstance(atlasInstance.instanceContainer)
             player.respawnPoint = atlasInstance.spawn.asPosition
         }
     }
