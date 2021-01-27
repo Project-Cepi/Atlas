@@ -7,11 +7,11 @@ import net.minestom.server.utils.Position
 @Serializable
 class KPosition(
         /** The X coordinate of the position. */
-        val x: Float,
+        val x: Double,
         /** The Y coordinate of the position. */
-        val y: Float,
+        val y: Double,
         /** The Z coordinate of the position. */
-        val z: Float,
+        val z: Double,
         /** The pitch (left and right) of the position. */
         val pitch: Float = 0f,
         /** The yaw (up and down) of the position.*/

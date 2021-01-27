@@ -36,7 +36,7 @@ data class AtlasInstance(
         /** If the instance should automatically load chunks */
         val autoChunkLoad: Boolean = true,
         /** The spawn of the instance. */
-        val spawn: KPosition = KPosition(0f, 50f, 0f),
+        val spawn: KPosition = KPosition(0.0, 50.0, 0.0),
         /** The time rate of the instance */
         val timeRate: Int = 0
 ) {

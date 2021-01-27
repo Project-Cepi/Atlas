@@ -74,7 +74,7 @@ class AtlasCommand : Command("atlas") {
             instance.data?.get<Position>("spawn")?.let {
                 sender.teleport(it)
             } ?: let {
-                sender.teleport(Position(0f, 300f, 0f))
+                sender.teleport(Position(0.0, 300.0, 0.0))
             }
 
             sender.sendMessage("Teleported to the instance's spawn!")
