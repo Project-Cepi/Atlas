@@ -10,8 +10,8 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
 import world.cepi.atlas.AtlasInstance
 import world.cepi.atlas.world.loader.Loader
-import world.cepi.kstom.addSyntax
-import world.cepi.kstom.arguments.asSubcommand
+import world.cepi.kstom.command.addSyntax
+import world.cepi.kstom.command.arguments.asSubcommand
 import java.util.*
 
 class AtlasCommand : Command("atlas") {
