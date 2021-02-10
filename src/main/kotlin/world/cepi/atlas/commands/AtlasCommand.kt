@@ -39,7 +39,7 @@ class AtlasCommand : Command("atlas") {
         }
 
         addSyntax(info, instances) { sender, args ->
-            val instance = getInstance(UUID.fromString(args.getString("instance")))
+            val instance = getInstance(UUID.fromString(args.get(instances)))
             sender.sendMessage("UUID: ${instance.uniqueId}")
         }
 
