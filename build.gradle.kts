@@ -31,7 +31,7 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // Compile Minestom into project
-    implementation("com.github.Minestom:Minestom:8334e100cf")
+    implementation("com.github.Minestom:Minestom:df2ee23a7c")
 
     // OkHttp
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
 
     // implement KStom
-    implementation("com.github.Project-Cepi:KStom:700ad836a1")
+    implementation("com.github.Project-Cepi:KStom:3b80924771")
 }
 
 tasks.withType<Test> {
