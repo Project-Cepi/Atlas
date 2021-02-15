@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
 
     // implement KStom
-    implementation("com.github.Project-Cepi:KStom:3b80924771")
+    implementation("com.github.Project-Cepi:KStom:120c4c5475")
 }
 
 tasks.withType<Test> {
