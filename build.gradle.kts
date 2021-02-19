@@ -37,7 +37,7 @@ dependencies {
     implementation("com.squareup.okhttp3", "okhttp", "4.9.0")
 
     // import kotlinx serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     // implement KStom
     implementation("com.github.Project-Cepi:KStom:120c4c5475")
