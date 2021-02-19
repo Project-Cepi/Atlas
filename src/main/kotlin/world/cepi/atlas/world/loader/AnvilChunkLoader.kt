@@ -26,7 +26,6 @@ import java.io.RandomAccessFile
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-
 class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     private val voidBiome: Biome =
@@ -40,6 +39,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
         try {
             val chunk = loadMCA(instance, chunkX, chunkZ, callback)
+            callback?.accept(chunk)
             return chunk != null
         } catch (e: Exception) {
             e.printStackTrace()
@@ -51,13 +51,13 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
     private fun loadMCA(instance: Instance, chunkX: Int, chunkZ: Int, callback: ChunkCallback?): Chunk? {
 
         val mcaFile = getMCAFile(chunkX, chunkZ)
-        val fileChunk = mcaFile!!.getChunk(chunkX, chunkZ)
+        val fileChunk = mcaFile?.getChunk(chunkX, chunkZ)
 
         if (fileChunk != null) {
             val biomes = arrayOfNulls<Biome>(Chunk.BIOME_COUNT)
             if (fileChunk.generationStatus > GenerationStatus.Biomes) {
-                val fileChunkBiomes = fileChunk.biomes
-                for (i in fileChunkBiomes!!.indices) {
+                val fileChunkBiomes = fileChunk.biomes ?: return null
+                for (i in fileChunkBiomes.indices) {
                     val id = fileChunkBiomes[i]
                     biomes[i] = MinecraftServer.getBiomeManager().getById(id) ?: voidBiome
                 }
@@ -76,6 +76,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
             return loadedChunk
         }
+
         return null
     }
 
@@ -102,9 +103,9 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
     private fun loadTileEntities(loadedChunk: Chunk, chunkX: Int, chunkZ: Int, fileChunk: ChunkColumn) {
         val pos = BlockPosition(0, 0, 0)
         for (te in fileChunk.tileEntities) {
-            val x = te.getInt("x")!! + chunkX * 16
-            val y = te.getInt("y")!!
-            val z = te.getInt("z")!! + chunkZ * 16
+            val x = (te.getInt("x") ?: return) + chunkX * 16
+            val y = te.getInt("y") ?: return
+            val z = (te.getInt("z") ?: return) + chunkZ * 16
             val block = loadedChunk.getCustomBlock(x, y, z)
             if (block != null) {
                 pos.x = x
@@ -182,7 +183,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
                             regionFile.createNewFile()
                         }
                         mcaFile = RegionFile(RandomAccessFile(regionFile, "rw"), regionX, regionZ)
-                        alreadyLoaded[n] = mcaFile!!
+                        alreadyLoaded[n] = mcaFile
                     } catch (e: AnvilException) {
                         LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
                         e.printStackTrace()
@@ -199,6 +200,9 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
                 val biome = chunk.biomes[i] ?: voidBiome
                 biomes[i] = biome.id
             }
+
+            if (mcaFile == null) return
+
             val column = try {
                 mcaFile!!.getOrCreateChunk(chunkX, chunkZ)
             } catch (e: Exception) {
