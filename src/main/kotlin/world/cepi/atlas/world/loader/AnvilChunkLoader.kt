@@ -235,13 +235,13 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             position.x = x
             position.y = y
             position.z = z
-            val customBlock = chunk.getCustomBlock(x, y, z)
+            val customBlock = chunk.getCustomBlock(x, y, z) ?: continue
             val nbt = NBTCompound()
             nbt.setInt("x", x)
             nbt.setInt("y", y)
             nbt.setInt("z", z)
             nbt.setByte("keepPacked", 0.toByte())
-            val block = Block.fromStateId(customBlock!!.defaultBlockStateId)
+            val block = Block.fromStateId(customBlock.defaultBlockStateId)
             val data = chunk.getBlockData(ChunkUtils.getBlockIndex(x, y, z))
             customBlock.writeBlockEntity(position, data, nbt)
             if (block.hasBlockEntity()) {
