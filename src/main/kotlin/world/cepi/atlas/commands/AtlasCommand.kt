@@ -1,5 +1,6 @@
 package world.cepi.atlas.commands
 
+import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
@@ -34,25 +35,25 @@ class AtlasCommand : Command("atlas") {
 
         addSyntax(list) { sender ->
             MinecraftServer.getInstanceManager().instances.forEach {
-                sender.sendMessage(it.uniqueId.toString())
+                sender.sendMessage(Component.text(it.uniqueId.toString()))
             }
         }
 
         addSyntax(info, instances) { sender, args ->
             val instance = getInstance(UUID.fromString(args.get(instances)))
-            sender.sendMessage("UUID: ${instance.uniqueId}")
+            sender.sendMessage(Component.text("UUID: ${instance.uniqueId}"))
         }
 
         addSyntax(info) { sender ->
 
             val player = sender as Player
-            player.sendMessage("UUID: ${player.instance?.uniqueId}")
+            player.sendMessage(Component.text("UUID: ${player.instance?.uniqueId}"))
         }
 
         addSyntax(setspawn, instances) { sender, args ->
 
             if (sender !is Player) {
-                sender.sendMessage("You are not a player!")
+                sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
@@ -62,7 +63,7 @@ class AtlasCommand : Command("atlas") {
 
         addSyntax(tp, instances) { sender, args ->
             if (sender !is Player) {
-                sender.sendMessage("You are not a player!")
+                sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
@@ -77,25 +78,25 @@ class AtlasCommand : Command("atlas") {
                 sender.teleport(Position(0.0, 300.0, 0.0))
             }
 
-            sender.sendMessage("Teleported to the instance's spawn!")
+            sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
         }
 
         addSyntax(tp) { sender ->
             if (sender !is Player) {
-                sender.sendMessage("You are not a player!")
+                sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
             sender.instance?.data?.get<Position>("spawn")?.let {
                 sender.teleport(it)
-                sender.sendMessage("Teleported to the instance's spawn!")
+                sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
             }
         }
 
         addSyntax(setspawn) { sender ->
 
             if (sender !is Player) {
-                sender.sendMessage("You are not a player!")
+                sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
@@ -105,7 +106,7 @@ class AtlasCommand : Command("atlas") {
         addSyntax(generate, loaders) { sender, args ->
 
             val instance = AtlasInstance(loader = Loader.valueOf(args.get(loaders).toUpperCase()))
-            sender.sendMessage("Instance (${instance.instanceContainer.uniqueId}) added!")
+            sender.sendMessage(Component.text("Instance (${instance.instanceContainer.uniqueId}) added!"))
 
         }
     }
@@ -119,14 +120,14 @@ class AtlasCommand : Command("atlas") {
 
     private fun setSpawn(player: Player, instance: Instance?) {
         if (player.instance == null) {
-            player.sendMessage("This instance does not exist!")
+            player.sendMessage(Component.text("This instance does not exist!"))
             return
         }
 
-        if (instance == null) player.sendMessage("This instance does not exist!")
+        if (instance == null) player.sendMessage(Component.text("This instance does not exist!"))
 
         if (player.instance!!.uniqueId != instance!!.uniqueId) {
-            player.sendMessage("This is the wrong instance you're setting the spawn of!")
+            player.sendMessage(Component.text("This is the wrong instance you're setting the spawn of!"))
             return
         }
 
@@ -134,7 +135,7 @@ class AtlasCommand : Command("atlas") {
 
         instance.data!!.set("spawn", player.position)
 
-        player.sendMessage("Set the spawn of ${instance.uniqueId}!")
+        player.sendMessage(Component.text("Set the spawn of ${instance.uniqueId}!"))
     }
 
 }

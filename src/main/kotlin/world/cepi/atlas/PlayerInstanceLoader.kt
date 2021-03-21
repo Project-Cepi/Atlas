@@ -10,10 +10,12 @@ object PlayerInstanceLoader {
         player.addEventCallback(PlayerLoginEvent::class) {
             if (MinecraftServer.getInstanceManager().instances.any { !it.isAtlas }) return@addEventCallback
 
-            val atlasInstance = MinecraftServer.getInstanceManager().instances.first().asAtlas!!
+            val atlasInstance = MinecraftServer.getInstanceManager().instances.first().asAtlas
 
-            setSpawningInstance(atlasInstance.instanceContainer)
-            player.respawnPoint = atlasInstance.spawn.asPosition
+            atlasInstance?.let {
+                setSpawningInstance(atlasInstance.instanceContainer)
+                player.respawnPoint = atlasInstance.spawn.asPosition
+            }
         }
     }
 }
