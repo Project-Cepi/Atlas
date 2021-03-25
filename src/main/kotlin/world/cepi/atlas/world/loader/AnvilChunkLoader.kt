@@ -67,9 +67,9 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
             val loadedChunk: Chunk = DynamicChunk(biomes, chunkX, chunkZ)
             val batch = ChunkBatch()
+            loadBlocks(instance, chunkX, chunkZ, batch, fileChunk)
 
-            batch.apply(instance, loadedChunk) {
-                loadBlocks(instance, chunkX, chunkZ, batch, fileChunk)
+            batch.unsafeApply(instance, loadedChunk) {
                 loadTileEntities(it, chunkX, chunkZ, fileChunk)
                 callback?.accept(it)
             }
