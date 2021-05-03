@@ -6,6 +6,7 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.utils.binary.BinaryReader
 import net.minestom.server.utils.chunk.ChunkCallback
+import world.cepi.kstom.Manager
 import java.io.*
 
 /**
@@ -54,11 +55,9 @@ class NamedInstanceChunkLoader(private val regionFolder: String): IChunkLoader {
             oos.writeObject(chunk.serializedData)
             oos.close()
         } catch (e: FileNotFoundException) {
-            // TODO Auto-generated catch block
-            e.printStackTrace()
+            Manager.exception.handleException(e)
         } catch (e: IOException) {
-            // TODO Auto-generated catch block
-            e.printStackTrace()
+            Manager.exception.handleException(e)
         }
     }
 
