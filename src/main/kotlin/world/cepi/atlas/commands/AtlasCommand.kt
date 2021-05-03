@@ -12,26 +12,27 @@ import net.minestom.server.utils.Position
 import world.cepi.atlas.AtlasInstance
 import world.cepi.atlas.world.loader.Loader
 import world.cepi.kstom.command.addSyntax
-import world.cepi.kstom.command.arguments.asSubcommand
+import world.cepi.kstom.command.arguments.literal
 import java.util.*
+import java.util.function.Supplier
 
 class AtlasCommand : Command("atlas") {
 
     init {
 
-        val list = "list".asSubcommand()
-        val info = "info".asSubcommand()
-        val import = "import".asSubcommand()
-        val setspawn = "setspawn".asSubcommand()
-        val tp = "tp".asSubcommand()
-        val generate = "generate".asSubcommand()
+        val list = "list".literal()
+        val info = "info".literal()
+        val import = "import".literal()
+        val setspawn = "setspawn".literal()
+        val tp = "tp".literal()
+        val generate = "generate".literal()
 
         val instances = ArgumentType.DynamicWord("instance").fromRestrictions { uuid ->
             return@fromRestrictions MinecraftServer.getInstanceManager().instances.any { it.uniqueId.toString() == uuid }
         }
 
         val loaders = ArgumentType.Word("loader").from(*Loader.values().map { it.name }.toTypedArray())
-        loaders.defaultValue = Loader.FALSE.name
+        loaders.defaultValue = Supplier { Loader.FALSE.name }
 
         addSyntax(list) { sender ->
             MinecraftServer.getInstanceManager().instances.forEach {

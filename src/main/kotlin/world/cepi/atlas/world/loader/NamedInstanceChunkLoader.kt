@@ -20,7 +20,7 @@ class NamedInstanceChunkLoader(private val regionFolder: String): IChunkLoader {
             val `is` = FileInputStream("$regionFolder/chunk.$chunkX.$chunkZ.save")
             val ois = ObjectInputStream(`is`)
             val chunkData = ois.readObject() as ByteArray
-            val chunk = (instance as InstanceContainer).chunkSupplier.createChunk(null, chunkX, chunkZ)
+            val chunk = (instance as InstanceContainer).chunkSupplier.createChunk(instance, null, chunkX, chunkZ)
             val reader = BinaryReader(chunkData)
             chunk.readChunk(reader, callback)
             ois.close()

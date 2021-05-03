@@ -7,7 +7,7 @@ import world.cepi.kstom.addEventCallback
 
 object PlayerInstanceLoader {
     fun load(player: Player) {
-        player.addEventCallback(PlayerLoginEvent::class) {
+        player.addEventCallback<PlayerLoginEvent> {
             if (MinecraftServer.getInstanceManager().instances.any { !it.isAtlas }) return@addEventCallback
 
             val atlasInstance = MinecraftServer.getInstanceManager().instances.first().asAtlas

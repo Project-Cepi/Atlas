@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
     id("org.jetbrains.dokka") version "1.4.32"
 
@@ -37,10 +37,10 @@ dependencies {
     compileOnly(kotlin("reflect"))
 
     // Compile Minestom into project
-    compileOnly("com.github.Project-Cepi:Minestom:60a03a9c8e")
+    compileOnly("com.github.Project-Cepi:Minestom:cd0ea0c0c2")
 
     // Get KStom
-    compileOnly("com.github.Project-Cepi:KStom:cbcf67f09c")
+    compileOnly("com.github.Project-Cepi:KStom:721c696099")
 
     // import kotlinx serialization
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0")
