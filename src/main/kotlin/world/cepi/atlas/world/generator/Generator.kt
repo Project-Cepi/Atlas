@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 
 enum class Generator(val generator: (String) -> ChunkGenerator) {
 
-    FLAT({ FlatGenerator()}),
-    VOID({ VoidGenerator()})
+    FLAT({ FlatGenerator() }),
+    VOID({ VoidGenerator() })
 
 }

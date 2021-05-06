@@ -20,6 +20,7 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound
 import org.jglrxavpok.hephaistos.nbt.NBTList
 import org.jglrxavpok.hephaistos.nbt.NBTTypes.TAG_Compound
 import org.slf4j.LoggerFactory
+import world.cepi.kstom.Manager
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap
 class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     private val voidBiome: Biome =
-            MinecraftServer.getBiomeManager().getByName(NamespaceID.from("minecraft:the_void")) ?: Biome.PLAINS
+            Manager.biome.getByName(NamespaceID.from("minecraft:the_void")) ?: Biome.PLAINS
 
     private val alreadyLoaded = ConcurrentHashMap<String, RegionFile?>()
 
@@ -42,7 +43,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
             callback?.accept(chunk)
             return chunk != null
         } catch (e: Exception) {
-            e.printStackTrace()
+            Manager.exception.handleException(e)
         }
 
         return false
@@ -127,7 +128,7 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
                         val registryBlock = Registries.getBlock(name)
                         var customBlockId: Short = 0
                         var data: Data? = null
-                        val customBlock = MinecraftServer.getBlockManager().getCustomBlock(registryBlock.blockId)
+                        val customBlock = Manager.block.getCustomBlock(registryBlock.blockId)
 
                         if (customBlock != null) {
                             customBlockId = registryBlock.blockId

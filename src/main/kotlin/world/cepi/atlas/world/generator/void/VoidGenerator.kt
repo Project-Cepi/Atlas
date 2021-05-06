@@ -6,6 +6,7 @@ import net.minestom.server.instance.ChunkPopulator
 import net.minestom.server.instance.batch.ChunkBatch
 import net.minestom.server.instance.block.Block
 import net.minestom.server.world.biomes.Biome
+import world.cepi.kstom.Manager
 import java.util.*
 
 /** Generates a completely empty void world. */
@@ -18,7 +19,7 @@ class VoidGenerator(
     }
 
     override fun fillBiomes(biomes: Array<out Biome>, chunkX: Int, chunkZ: Int) {
-        Arrays.fill(biomes, MinecraftServer.getBiomeManager().getById(0))
+        Arrays.fill(biomes, Manager.biome.getById(0))
     }
 
     override fun getPopulators(): MutableList<ChunkPopulator> = chunkPopulators.toMutableList()

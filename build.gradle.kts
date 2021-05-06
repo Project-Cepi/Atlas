@@ -14,10 +14,9 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    jcenter()
+    // use mavenCentral
     mavenCentral()
-    // Use mavenCentral
+
     maven(url = "https://repo1.maven.org/maven2/")
     maven(url = "https://repo.spongepowered.org/maven")
     maven(url = "https://libraries.minecraft.net")
@@ -41,7 +40,7 @@ dependencies {
     compileOnly("com.github.Project-Cepi:Minestom:cd0ea0c0c2")
 
     // Get KStom
-    compileOnly("com.github.Project-Cepi:KStom:721c696099")
+    compileOnly("com.github.Project-Cepi:KStom:54bfeccbf0")
 
     // import kotlinx serialization
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0")

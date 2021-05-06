@@ -2,9 +2,9 @@ package world.cepi.atlas.commands
 
 import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
-import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.command.builder.exception.ArgumentSyntaxException
 import net.minestom.server.data.DataImpl
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
@@ -27,8 +27,10 @@ class AtlasCommand : Command("atlas") {
         val tp = "tp".literal()
         val generate = "generate".literal()
 
-        val instances = ArgumentType.DynamicWord("instance").fromRestrictions { uuid ->
-            return@fromRestrictions MinecraftServer.getInstanceManager().instances.any { it.uniqueId.toString() == uuid }
+        val instances = ArgumentType.Word("instance").map { uuid ->
+            return@map MinecraftServer.getInstanceManager()
+                .instances.firstOrNull { it.uniqueId.toString() == uuid }
+                ?: throw ArgumentSyntaxException("Instance not found", uuid, 1)
         }
 
         val loaders = ArgumentType.Word("loader").from(*Loader.values().map { it.name }.toTypedArray())
@@ -41,7 +43,7 @@ class AtlasCommand : Command("atlas") {
         }
 
         addSyntax(info, instances) { sender, args ->
-            val instance = getInstance(UUID.fromString(args.get(instances)))
+            val instance = args.get(instances)
             sender.sendMessage(Component.text("UUID: ${instance.uniqueId}"))
         }
 
@@ -58,7 +60,7 @@ class AtlasCommand : Command("atlas") {
                 return@addSyntax
             }
 
-            val instance = getInstance(UUID.fromString(args.get(instances)))
+            val instance = args.get(instances)
             setSpawn(sender, instance)
         }
 
@@ -68,7 +70,7 @@ class AtlasCommand : Command("atlas") {
                 return@addSyntax
             }
 
-            val instance = getInstance(UUID.fromString(args.get(instances)))
+            val instance = args.get(instances)
 
             if (sender.instance?.uniqueId != instance.uniqueId)
                 sender.setInstance(instance)
@@ -106,25 +108,16 @@ class AtlasCommand : Command("atlas") {
 
         addSyntax(generate, loaders) { sender, args ->
 
-            val instance = AtlasInstance(loader = Loader.valueOf(args.get(loaders).toUpperCase()))
+            val instance = AtlasInstance(loader = Loader.valueOf(args.get(loaders).uppercase()))
             sender.sendMessage(Component.text("Instance (${instance.instanceContainer.uniqueId}) added!"))
 
         }
     }
 
-    override fun onDynamicWrite(sender: CommandSender, text: String): Array<out String> {
-        return MinecraftServer.getInstanceManager().instances.map { it.uniqueId.toString() }.toTypedArray()
-    }
-
-    private fun getInstance(uuid: UUID): Instance = MinecraftServer.getInstanceManager().instances
+    private fun findInstance(uuid: UUID): Instance = MinecraftServer.getInstanceManager().instances
         .first { it.uniqueId == uuid }
 
     private fun setSpawn(player: Player, instance: Instance?) {
-        if (player.instance == null) {
-            player.sendMessage(Component.text("This instance does not exist!"))
-            return
-        }
-
         if (instance == null) player.sendMessage(Component.text("This instance does not exist!"))
 
         if (player.instance!!.uniqueId != instance!!.uniqueId) {
