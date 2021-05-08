@@ -13,6 +13,7 @@ import net.minestom.server.utils.Position
 import world.cepi.atlas.world.ChunkType
 import world.cepi.atlas.world.generator.Generator
 import world.cepi.atlas.world.loader.Loader
+import world.cepi.kstom.Manager
 import java.util.*
 import java.io.File
 import kotlin.reflect.full.primaryConstructor
@@ -46,7 +47,7 @@ data class AtlasInstance(
         lateinit var instanceContainer: InstanceContainer
 
         init {
-                val instanceManager = MinecraftServer.getInstanceManager()
+                val instanceManager = Manager.instance
 
                 instanceContainer = instanceManager.createInstanceContainer()
 

@@ -16,7 +16,7 @@ import world.cepi.kstom.command.arguments.literal
 import java.util.*
 import java.util.function.Supplier
 
-class AtlasCommand : Command("atlas") {
+object AtlasCommand : Command("atlas") {
 
     init {
 
