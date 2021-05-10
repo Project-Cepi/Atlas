@@ -71,7 +71,7 @@ data class AtlasInstance(
         fun unregister() {
                 instances.remove(this)
 
-                MinecraftServer.getInstanceManager().unregisterInstance(this.instanceContainer)
+                Manager.instance.unregisterInstance(this.instanceContainer)
 
                 update()
         }
@@ -99,7 +99,7 @@ data class AtlasInstance(
 
                 /** Load all instances from the [instanceFile] configuration. */
                 fun loadInstances() {
-                        Json.decodeFromString(serializer, instanceFile.readText())
+                        instances.addAll(Json.decodeFromString(serializer, instanceFile.readText()))
                 }
 
                 init {
@@ -111,13 +111,11 @@ data class AtlasInstance(
 }
 
 /** Check if a Minestom instance is registered as an atlas instance. */
-val Instance.isAtlas: Boolean get() = run {
+val Instance.isAtlas: Boolean get() =
         if (this.data == null) true
         else this.data!!.get<AtlasInstance>("atlas") != null
-}
 
 /** Gets an Atlas Instance, as long as the Minestom Instance is one. */
-val Instance.asAtlas: AtlasInstance? get() = run {
+val Instance.asAtlas: AtlasInstance? get() =
         if (this.data == null) null
         else this.data?.get<AtlasInstance>("atlas")
-}

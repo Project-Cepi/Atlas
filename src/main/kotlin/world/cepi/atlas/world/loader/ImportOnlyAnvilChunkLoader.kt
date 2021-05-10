@@ -27,7 +27,7 @@ import java.io.RandomAccessFile
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
+class ImportOnlyAnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     private val voidBiome: Biome =
             Manager.biome.getByName(NamespaceID.from("minecraft:the_void")) ?: Biome.PLAINS
@@ -92,10 +92,10 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
                 }
                 return@computeIfAbsent RegionFile(RandomAccessFile(regionFile, "rw"), regionX, regionZ)
             } catch (e: IOException) {
-                e.printStackTrace()
+                Manager.exception.handleException(e)
                 return@computeIfAbsent null
             } catch (e: AnvilException) {
-                e.printStackTrace()
+                Manager.exception.handleException(e)
                 return@computeIfAbsent null
             }
         }
@@ -167,121 +167,13 @@ class AnvilChunkLoader(private val regionFolder: String) : IChunkLoader {
 
     // TODO: find a way to unload MCAFiles when an entire region is unloaded
     override fun saveChunk(chunk: Chunk, callback: Runnable?) {
-        with(chunk) {
-            var mcaFile: RegionFile?
-            synchronized(alreadyLoaded) {
-                mcaFile = getMCAFile(chunkX, chunkZ)
-                if (mcaFile == null) {
-                    val regionX = chunkX.chunkToRegion()
-                    val regionZ = chunkZ.chunkToRegion()
-                    val n = RegionFile.createFileName(regionX, regionZ)
-                    val regionFile = File(regionFolder, n)
-                    try {
-                        if (!regionFile.exists()) {
-                            if (!regionFile.parentFile.exists()) {
-                                regionFile.parentFile.mkdirs()
-                            }
-                            regionFile.createNewFile()
-                        }
-                        mcaFile = RegionFile(RandomAccessFile(regionFile, "rw"), regionX, regionZ)
-                        alreadyLoaded[n] = mcaFile
-                    } catch (e: AnvilException) {
-                        LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                        e.printStackTrace()
-                        return
-                    } catch (e: IOException) {
-                        LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                        e.printStackTrace()
-                        return
-                    }
-                }
-            }
-            val biomes = IntArray(Chunk.BIOME_COUNT)
-            for (i in biomes.indices) {
-                val biome = chunk.biomes[i] ?: voidBiome
-                biomes[i] = biome.id
-            }
-
-            if (mcaFile == null) return
-
-            val column = try {
-                mcaFile!!.getOrCreateChunk(chunkX, chunkZ)
-            } catch (e: Exception) {
-                LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                e.printStackTrace()
-                return
-            }
-
-            save(chunk, column)
-            try {
-                LOGGER.debug("Attempt saving at {} {}", chunkX, chunkZ)
-                mcaFile!!.writeColumn(column)
-            } catch (e: Exception) {
-                LOGGER.error("Failed to save chunk $chunkX, $chunkZ", e)
-                e.printStackTrace()
-                return
-            }
-
-            callback?.run()
-        }
+        callback?.run()
     }
-
-    private fun saveTileEntities(chunk: Chunk, fileChunk: ChunkColumn) {
-        val tileEntities = NBTList<NBTCompound>(TAG_Compound)
-        val position = BlockPosition(0, 0, 0)
-        for (index in chunk.blockEntities) {
-            val x = ChunkUtils.blockIndexToChunkPositionX(index).toInt()
-            val y = ChunkUtils.blockIndexToChunkPositionY(index).toInt()
-            val z = ChunkUtils.blockIndexToChunkPositionZ(index).toInt()
-            position.x = x
-            position.y = y
-            position.z = z
-            val customBlock = chunk.getCustomBlock(x, y, z) ?: continue
-            val nbt = NBTCompound()
-            nbt.setInt("x", x)
-            nbt.setInt("y", y)
-            nbt.setInt("z", z)
-            nbt.setByte("keepPacked", 0.toByte())
-            val block = Block.fromStateId(customBlock.defaultBlockStateId)
-            val data = chunk.getBlockData(ChunkUtils.getBlockIndex(x, y, z))
-            customBlock.writeBlockEntity(position, data, nbt)
-            if (block.hasBlockEntity()) {
-                nbt.setString("id", block.blockEntityName.toString())
-                tileEntities.add(nbt)
-            } else
-                LOGGER.warn("Tried to save block entity for a block which is not a block entity? Block is {} at {},{},{}", customBlock, x, y, z)
-        }
-        fileChunk.tileEntities = tileEntities
-    }
-
-    private fun save(chunk: Chunk, chunkColumn: ChunkColumn) {
-        chunkColumn.generationStatus = GenerationStatus.Full
-
-        // TODO: other elements to save
-        saveTileEntities(chunk, chunkColumn)
-        for (x in 0 until Chunk.CHUNK_SIZE_X) {
-            for (z in 0 until Chunk.CHUNK_SIZE_Z) {
-                for (y in 0 until Chunk.CHUNK_SIZE_Y) {
-                    val id = chunk.getBlockStateId(x, y, z)
-                    // CustomBlock customBlock = chunk.getCustomBlock(x, y, z);
-                    val block = Block.fromStateId(id)
-                    val alt = block.getAlternative(id)
-                    val properties = alt.createPropertiesMap()
-                    val state = BlockState(block.getName(), properties)
-                    chunkColumn.setBlockState(x, y, z, state)
-                    val index = y shr 2 and 63 shl 4 or (z shr 2 and 3 shl 2) or (x shr 2 and 3) // https://wiki.vg/Chunk_Format#Biomes
-                    val biome = chunk.biomes[index]
-                    chunkColumn.setBiome(x, 0, z, biome.id)
-                }
-            }
-        }
-    }
-
     override fun supportsParallelLoading() = true
 
     override fun supportsParallelSaving() = true
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(AnvilChunkLoader::class.java)
+        private val LOGGER = LoggerFactory.getLogger(ImportOnlyAnvilChunkLoader::class.java)
     }
 }

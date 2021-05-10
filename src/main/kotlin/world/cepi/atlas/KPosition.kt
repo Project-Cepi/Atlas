@@ -18,6 +18,7 @@ class KPosition(
         val yaw: Float = 0f
 ) {
     /** Converts a [KPosition] as a [Position] */
-    val asPosition: Position
-        get() = Position(x, y, z, pitch, yaw)
+    val asPosition: Position by lazy {
+        Position(x, y, z, pitch, yaw)
+    }
 }
