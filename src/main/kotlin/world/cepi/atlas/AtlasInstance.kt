@@ -51,7 +51,7 @@ data class AtlasInstance(
 
                 instanceContainer = instanceManager.createInstanceContainer()
 
-                instanceContainer.chunkGenerator = generator.generator.invoke("")
+                instanceContainer.chunkGenerator = generator.generator.invoke(name)
                 instanceContainer.enableAutoChunkLoad(autoChunkLoad)
 
                 instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./atlas/$name")
@@ -60,7 +60,7 @@ data class AtlasInstance(
 
                 instances.add(this)
 
-                if (instanceContainer.data == null) instanceContainer.data = DataImpl()
+                instanceContainer.data = DataImpl()
                 instanceContainer.data!!.set("spawn", spawn.asPosition)
                 instanceContainer.data!!.set("atlas", this)
 

@@ -31,11 +31,11 @@ class NamedInstanceChunkLoader(private val regionFolder: String): IChunkLoader {
             false
         } catch (e: IOException) {
             // Error in opening save file
-            e.printStackTrace()
+            Manager.exception.handleException(e)
             false
         } catch (e: ClassNotFoundException) {
             // Error in loading save file
-            e.printStackTrace()
+            Manager.exception.handleException(e)
             false
         }
     }
