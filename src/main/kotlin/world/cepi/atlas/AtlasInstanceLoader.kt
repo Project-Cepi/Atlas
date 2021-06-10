@@ -3,7 +3,6 @@ package world.cepi.atlas
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.PlayerLoginEvent
 import world.cepi.kstom.Manager
-import world.cepi.kstom.addEventCallback
 
 object AtlasInstanceLoader {
 
@@ -22,16 +21,17 @@ object AtlasInstanceLoader {
         atlasInstance
     }
 
-    fun load(player: Player) = instance?.let {
+    fun attatchPlayerInitialization(player: Player) = instance?.let {
 
         // Set the respawn point to the instance's (serializable) spawn
         player.respawnPoint = instance!!.spawn.asPosition
 
-        player.addEventCallback<PlayerLoginEvent> {
+    }
 
-            // set the spawning instance to the instance's container
-            setSpawningInstance(instance!!.instanceContainer)
+    fun loadEvent(event: PlayerLoginEvent) = with(event) {
 
-        }
+        // set the spawning instance to the instance's container
+        setSpawningInstance(instance!!.instanceContainer)
+
     }
 }
