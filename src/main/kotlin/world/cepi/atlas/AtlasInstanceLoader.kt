@@ -21,7 +21,7 @@ object AtlasInstanceLoader {
         atlasInstance
     }
 
-    fun attatchPlayerInitialization(player: Player) = instance?.let {
+    fun attachPlayerInitialization(player: Player) = instance?.let {
 
         // Set the respawn point to the instance's (serializable) spawn
         player.respawnPoint = instance!!.spawn.asPosition

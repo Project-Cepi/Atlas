@@ -16,7 +16,7 @@ class AtlasExtension : Extension() {
         AtlasCommand.register()
 
         AtlasInstance.loadInstances()
-        Manager.connection.addPlayerInitialization(AtlasInstanceLoader::attatchPlayerInitialization)
+        Manager.connection.addPlayerInitialization(AtlasInstanceLoader::attachPlayerInitialization)
         eventNode.listenOnly(AtlasInstanceLoader::loadEvent)
 
         logger.info("[Atlas] has been enabled!")
@@ -26,7 +26,7 @@ class AtlasExtension : Extension() {
 
         AtlasCommand.unregister()
 
-        Manager.connection.removePlayerInitialization(AtlasInstanceLoader::attatchPlayerInitialization)
+        Manager.connection.removePlayerInitialization(AtlasInstanceLoader::attachPlayerInitialization)
 
         logger.info("[Atlas] has been disabled!")
     }
