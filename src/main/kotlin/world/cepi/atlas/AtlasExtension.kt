@@ -31,6 +31,6 @@ class AtlasExtension : Extension() {
         logger.info("[Atlas] has been disabled!")
     }
 
-    companion object: ExtensionCompanion<AtlasExtension>(AtlasExtension::class)
+    companion object: ExtensionCompanion<AtlasExtension>(Any())
 
 }
