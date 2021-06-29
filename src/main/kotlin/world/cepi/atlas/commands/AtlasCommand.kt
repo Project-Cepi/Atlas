@@ -36,79 +36,87 @@ object AtlasCommand : Command("atlas") {
         val loaders = ArgumentType.Word("loader").from(*Loader.values().map { it.name }.toTypedArray())
         loaders.defaultValue = Supplier { Loader.FALSE.name }
 
-        addSyntax(list) { sender ->
+        addSyntax(list) {
             MinecraftServer.getInstanceManager().instances.forEach {
                 sender.sendMessage(Component.text(it.uniqueId.toString()))
             }
         }
 
-        addSyntax(info, instances) { sender, args ->
-            val instance = args.get(instances)
+        addSyntax(info, instances) {
+            val instance = context.get(instances)
             sender.sendMessage(Component.text("UUID: ${instance.uniqueId}"))
         }
 
-        addSyntax(info) { sender ->
+        addSyntax(info) {
 
             val player = sender as Player
             player.sendMessage(Component.text("UUID: ${player.instance?.uniqueId}"))
         }
 
-        addSyntax(setspawn, instances) { sender, args ->
+        addSyntax(setspawn, instances) {
 
             if (sender !is Player) {
                 sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
-            val instance = args.get(instances)
-            setSpawn(sender, instance)
+            val player = sender as Player
+
+            val instance = context.get(instances)
+            setSpawn(player, instance)
         }
 
-        addSyntax(tp, instances) { sender, args ->
+        addSyntax(tp, instances) {
             if (sender !is Player) {
                 sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
-            val instance = args.get(instances)
+            val player = sender as Player
 
-            if (sender.instance?.uniqueId != instance.uniqueId)
-                sender.setInstance(instance)
+            val instance = context.get(instances)
+
+            if (player.instance?.uniqueId != instance.uniqueId)
+                player.setInstance(instance)
 
             instance.data?.get<Position>("spawn")?.let {
-                sender.teleport(it)
+                player.teleport(it)
             } ?: let {
-                sender.teleport(Position(0.0, 300.0, 0.0))
+                player.teleport(Position(0.0, 300.0, 0.0))
             }
 
             sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
         }
 
-        addSyntax(tp) { sender ->
+        addSyntax(tp) {
             if (sender !is Player) {
                 sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
-            sender.instance?.data?.get<Position>("spawn")?.let {
-                sender.teleport(it)
-                sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
+            val player = sender as Player
+
+            player.instance?.data?.get<Position>("spawn")?.let {
+                player.teleport(it)
+                player.sendMessage(Component.text("Teleported to the instance's spawn!"))
             }
         }
 
-        addSyntax(setspawn) { sender ->
+        addSyntax(setspawn) {
 
             if (sender !is Player) {
                 sender.sendMessage(Component.text("You are not a player!"))
                 return@addSyntax
             }
 
-            setSpawn(sender, sender.instance)
+            val player = sender as Player
+
+            setSpawn(player, player.instance)
         }
 
-        addSyntax(generate, loaders) { sender, args ->
+        addSyntax(generate, loaders) {
 
-            val instance = AtlasInstance(loader = Loader.valueOf(args.get(loaders).uppercase()))
+            val instance = AtlasInstance(loader = Loader.valueOf(context.get(loaders).uppercase()))
             sender.sendMessage(Component.text("Instance (${instance.instanceContainer.uniqueId}) added!"))
 
         }

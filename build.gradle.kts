@@ -19,7 +19,6 @@ repositories {
 
     maven(url = "https://jitpack.io")
     maven(url = "https://repo.spongepowered.org/maven")
-    maven(url = "https://repo.minestom.com/repository/maven-public/")
     maven(url = "https://repo.velocitypowered.com/snapshots/")
 }
 
@@ -35,10 +34,10 @@ dependencies {
     compileOnly(kotlin("reflect"))
 
     // Compile Minestom into project
-    compileOnly("com.github.Minestom:Minestom:78cc392007")
+    compileOnly("com.github.Minestom:Minestom:fbb8c1a819")
 
     // Get KStom
-    compileOnly("com.github.Project-Cepi:KStom:38216ae174")
+    compileOnly("com.github.Project-Cepi:KStom:6301b51cfd")
 
     // import kotlinx serialization
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")

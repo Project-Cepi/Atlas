@@ -49,7 +49,7 @@ class AnvilChunkGenerator(private val regionFolder: String) : ChunkGenerator {
     }
 
     private fun loadBlocks(batch: ChunkBatch, fileChunk: ChunkColumn) {
-        for (x in 0 until Chunk.CHUNK_SIZE_X) for (z in 0 until Chunk.CHUNK_SIZE_Z) for (y in 0 until Chunk.CHUNK_SIZE_Y) {
+        for (x in 0 until Chunk.CHUNK_SIZE_X) for (z in 0 until Chunk.CHUNK_SIZE_Z) for (y in 0 until 256) {
             try {
 
                 val (name, properties) = fileChunk.getBlockState(x, y, z)
