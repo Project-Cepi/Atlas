@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import net.minestom.server.MinecraftServer
 import net.minestom.server.data.DataImpl
 import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
@@ -14,6 +13,7 @@ import world.cepi.atlas.world.ChunkType
 import world.cepi.atlas.world.generator.Generator
 import world.cepi.atlas.world.loader.Loader
 import world.cepi.kstom.Manager
+import world.cepi.kstom.serializer.PositionSerializer
 import java.util.*
 import java.io.File
 import kotlin.reflect.full.primaryConstructor
@@ -37,7 +37,8 @@ data class AtlasInstance(
         /** If the instance should automatically load chunks */
         val autoChunkLoad: Boolean = true,
         /** The spawn of the instance. */
-        val spawn: KPosition = KPosition(0.0, 50.0, 0.0),
+        @Serializable(with = PositionSerializer::class)
+        val spawn: Position = Position(0.0, 50.0, 0.0),
         /** The time rate of the instance */
         val timeRate: Int = 0
 ) {
@@ -61,7 +62,7 @@ data class AtlasInstance(
                 instances.add(this)
 
                 instanceContainer.data = DataImpl()
-                instanceContainer.data!!.set("spawn", spawn.asPosition)
+                instanceContainer.data!!.set("spawn", spawn)
                 instanceContainer.data!!.set("atlas", this)
 
                 update()
