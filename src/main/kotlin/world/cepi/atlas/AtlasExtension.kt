@@ -15,9 +15,7 @@ class AtlasExtension : Extension() {
         AtlasCommand.register()
 
         AtlasInstance.loadInstances()
-        eventNode.listenOnly<PlayerSpawnEvent> {
-            AtlasInstanceLoader.attachPlayerInitialization(player)
-        }
+        eventNode.listenOnly(AtlasInstanceLoader::onSpawn)
         eventNode.listenOnly(AtlasInstanceLoader::loadEvent)
 
         logger.info("[Atlas] has been enabled!")

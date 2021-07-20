@@ -2,6 +2,7 @@ package world.cepi.atlas
 
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.PlayerLoginEvent
+import net.minestom.server.event.player.PlayerSpawnEvent
 import world.cepi.kstom.Manager
 
 object AtlasInstanceLoader {
@@ -21,10 +22,11 @@ object AtlasInstanceLoader {
         atlasInstance
     }
 
-    fun attachPlayerInitialization(player: Player) = instance?.let {
+    fun onSpawn(event: PlayerSpawnEvent) = instance?.let {
 
         // Set the respawn point to the instance's (serializable) spawn
-        player.respawnPoint = it.spawn
+        event.player.respawnPoint = it.spawn
+        event.player.teleport(it.spawn)
 
     }
 
