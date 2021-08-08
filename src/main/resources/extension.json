@@ -1,5 +1,11 @@
 {
   "entrypoint": "world.cepi.atlas.AtlasExtension",
   "name": "Atlas",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": [
+    "KStom"
+  ],
+  "meta": {
+    "downloadURL": "https://github.com/Project-Cepi/Atlas/releases/download/latest/atlas-all.jar"
+  }
 }
