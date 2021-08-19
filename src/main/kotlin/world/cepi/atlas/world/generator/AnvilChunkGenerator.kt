@@ -2,7 +2,7 @@ package world.cepi.atlas.world.generator
 
 import net.minestom.server.instance.*
 import net.minestom.server.instance.batch.ChunkBatch
-import net.minestom.server.registry.Registries
+import net.minestom.server.instance.block.Block
 import net.minestom.server.world.biomes.Biome
 import org.jglrxavpok.hephaistos.mca.*
 import org.slf4j.LoggerFactory
@@ -53,18 +53,13 @@ class AnvilChunkGenerator(private val regionFolder: String) : ChunkGenerator {
             try {
 
                 val (name, properties) = fileChunk.getBlockState(x, y, z)
-                val registryBlock = Registries.getBlock(name)
+                val registryBlock = Block.fromNamespaceId(name) ?: continue
 
                 if (properties.isNotEmpty()) {
 
-                    val propertiesArray = properties
-                            .map { (key, value) ->
-                                "$key=${value.replace("\"", "")}" }
-                            .sorted()
+                    val block = registryBlock.withProperties(properties)
 
-                    val block = registryBlock.withProperties(*propertiesArray.toTypedArray())
-
-                    batch.setBlockStateId(x, y, z, block)
+                    batch.setBlock(x, y, z, block)
 
                 } else {
 

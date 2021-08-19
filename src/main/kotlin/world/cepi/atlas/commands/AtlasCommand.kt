@@ -5,11 +5,11 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException
-import net.minestom.server.data.DataImpl
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.Position
 import world.cepi.atlas.AtlasInstance
+import world.cepi.atlas.asAtlas
 import world.cepi.atlas.world.loader.Loader
 import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.literal
@@ -79,10 +79,10 @@ object AtlasCommand : Command("atlas") {
             if (player.instance?.uniqueId != instance.uniqueId)
                 player.setInstance(instance)
 
-            instance.data?.get<Position>("spawn")?.let {
+            instance.asAtlas?.spawn?.let {
                 player.teleport(it)
             } ?: let {
-                player.teleport(Position(0.0, 300.0, 0.0))
+                player.teleport(Pos(0.0, 300.0, 0.0))
             }
 
             sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
@@ -96,7 +96,7 @@ object AtlasCommand : Command("atlas") {
 
             val player = sender as Player
 
-            player.instance?.data?.get<Position>("spawn")?.let {
+            player.instance?.asAtlas?.spawn?.let {
                 player.teleport(it)
                 player.sendMessage(Component.text("Teleported to the instance's spawn!"))
             }
@@ -133,9 +133,7 @@ object AtlasCommand : Command("atlas") {
             return
         }
 
-        if (instance.data == null) instance.data = DataImpl()
-
-        instance.data!!.set("spawn", player.position)
+        instance.asAtlas?.spawn = player.position
 
         player.sendMessage(Component.text("Set the spawn of ${instance.uniqueId}!"))
     }

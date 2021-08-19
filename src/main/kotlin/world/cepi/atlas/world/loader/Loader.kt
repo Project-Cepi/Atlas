@@ -1,5 +1,6 @@
 package world.cepi.atlas.world.loader
 
+import net.minestom.server.instance.AnvilLoader
 import net.minestom.server.instance.IChunkLoader
 import world.cepi.atlas.world.generator.AnvilChunkGenerator
 import kotlin.reflect.KClass
@@ -8,7 +9,7 @@ import kotlin.reflect.KClass
 enum class Loader(val loader: KClass<out IChunkLoader>) {
 
     /** Loads a world from the minestom data container. */
-    MINESTOM(NamedInstanceChunkLoader::class),
+    MINESTOM(AnvilLoader::class),
 
     /** Doesnt attempt to load anything */
     FALSE(FalseChunkLoader::class)

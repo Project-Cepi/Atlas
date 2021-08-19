@@ -3,12 +3,13 @@ package world.cepi.atlas
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import net.minestom.server.data.DataImpl
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
-import net.minestom.server.utils.Position
+import net.minestom.server.tag.Tag
 import world.cepi.atlas.world.ChunkType
 import world.cepi.atlas.world.generator.Generator
 import world.cepi.atlas.world.loader.Loader
@@ -38,7 +39,7 @@ data class AtlasInstance(
         val autoChunkLoad: Boolean = true,
         /** The spawn of the instance. */
         @Serializable(with = PositionSerializer::class)
-        val spawn: Position = Position(0.0, 50.0, 0.0),
+        var spawn: Pos = Pos(0.0, 50.0, 0.0),
         /** The time rate of the instance */
         val timeRate: Int = 0
 ) {
@@ -59,18 +60,20 @@ data class AtlasInstance(
 
                 instanceContainer.timeRate = timeRate
 
-                instances.add(this)
+                instances[name] = this
 
-                instanceContainer.data = DataImpl()
-                instanceContainer.data!!.set("spawn", spawn)
-                instanceContainer.data!!.set("atlas", this)
+                instanceContainer.setTag(Tag.Double("spawnX"), spawn.x())
+                instanceContainer.setTag(Tag.Double("spawnY"), spawn.y())
+                instanceContainer.setTag(Tag.Double("spawnZ"), spawn.z())
+
+                instanceContainer.setTag(tag, name)
 
                 update()
         }
 
         /** Unregister an atlas instance. */
         fun unregister() {
-                instances.remove(this)
+                instances.remove(name)
 
                 Manager.instance.unregisterInstance(this.instanceContainer)
 
@@ -79,8 +82,10 @@ data class AtlasInstance(
 
         companion object {
 
+                val tag = Tag.String("atlas")
+
                 /** The AtlasInstance list serializer. */
-                private val serializer: KSerializer<List<AtlasInstance>> = ListSerializer(serializer())
+                private val serializer: KSerializer<Map<String, AtlasInstance>> = MapSerializer(String.serializer(), serializer())
 
                 /** A file representation of the instance configuration for atlas*/
                 private val instanceFile = File("./atlas/atlas.json")
@@ -89,7 +94,7 @@ data class AtlasInstance(
                 private val instanceFolder = File("./atlas")
 
                 /** The current cache of the AtlasInstances. */
-                private val instances: MutableList<AtlasInstance> = mutableListOf()
+                val instances: MutableMap<String, AtlasInstance> = mutableMapOf()
 
                 /** Update the config file of Atlas. Refer to [instanceFile] for more information*/
                 fun update() {
@@ -100,7 +105,7 @@ data class AtlasInstance(
 
                 /** Load all instances from the [instanceFile] configuration. */
                 fun loadInstances() {
-                        instances.addAll(Json.decodeFromString(serializer, instanceFile.readText()))
+                        instances.putAll(Json.decodeFromString(serializer, instanceFile.readText()))
                 }
 
                 init {
@@ -113,10 +118,8 @@ data class AtlasInstance(
 
 /** Check if a Minestom instance is registered as an atlas instance. */
 val Instance.isAtlas: Boolean get() =
-        if (this.data == null) true
-        else this.data!!.get<AtlasInstance>("atlas") != null
+        AtlasInstance.instances.contains(this.getTag(AtlasInstance.tag) ?: false)
 
 /** Gets an Atlas Instance, as long as the Minestom Instance is one. */
 val Instance.asAtlas: AtlasInstance? get() =
-        if (this.data == null) null
-        else this.data?.get<AtlasInstance>("atlas")
+        AtlasInstance.instances[this.getTag(AtlasInstance.tag)]
