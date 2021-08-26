@@ -17,6 +17,7 @@ import world.cepi.kstom.Manager
 import world.cepi.kstom.serializer.PositionSerializer
 import java.util.*
 import java.io.File
+import java.nio.file.Path
 import kotlin.reflect.full.primaryConstructor
 
 /**
@@ -56,7 +57,9 @@ data class AtlasInstance(
                 instanceContainer.chunkGenerator = generator.generator.invoke(name)
                 instanceContainer.enableAutoChunkLoad(autoChunkLoad)
 
-                instanceContainer.chunkLoader = loader.loader.primaryConstructor?.call("./atlas/$name")
+                instanceContainer.chunkLoader = loader.loader.java
+                        .getDeclaredConstructor(Path::class.java)
+                        .newInstance(Path.of("./atlas/$name"))
 
                 instanceContainer.timeRate = timeRate
 

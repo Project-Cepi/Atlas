@@ -8,7 +8,6 @@ import kotlin.reflect.KClass
 enum class Generator(val generator: (String) -> ChunkGenerator) {
 
     FLAT({ FlatGenerator() }),
-    VOID({ VoidGenerator() }),
-    ANVIL({ file -> AnvilChunkGenerator("./atlas/$file") })
+    VOID({ VoidGenerator() })
 
 }

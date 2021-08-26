@@ -13,6 +13,7 @@ import world.cepi.atlas.asAtlas
 import world.cepi.atlas.world.loader.Loader
 import world.cepi.kstom.command.addSyntax
 import world.cepi.kstom.command.arguments.literal
+import world.cepi.kstom.command.arguments.suggest
 import java.util.*
 import java.util.function.Supplier
 
@@ -28,9 +29,11 @@ object AtlasCommand : Command("atlas") {
         val generate = "generate".literal()
 
         val instances = ArgumentType.Word("instance").map { uuid ->
-            return@map MinecraftServer.getInstanceManager()
-                .instances.firstOrNull { it.uniqueId.toString() == uuid }
+            return@map AtlasInstance.instances.values
+                .firstOrNull { it.name == uuid }
                 ?: throw ArgumentSyntaxException("Instance not found", uuid, 1)
+        }.suggest {
+            AtlasInstance.instances.keys.toList()
         }
 
         val loaders = ArgumentType.Word("loader").from(*Loader.values().map { it.name }.toTypedArray())
@@ -44,7 +47,7 @@ object AtlasCommand : Command("atlas") {
 
         addSyntax(info, instances) {
             val instance = context.get(instances)
-            sender.sendMessage(Component.text("UUID: ${instance.uniqueId}"))
+            sender.sendMessage(Component.text("UUID: ${instance.instanceContainer.uniqueId}"))
         }
 
         addSyntax(info) {
@@ -63,7 +66,7 @@ object AtlasCommand : Command("atlas") {
             val player = sender as Player
 
             val instance = context.get(instances)
-            setSpawn(player, instance)
+            setSpawn(player, instance.instanceContainer)
         }
 
         addSyntax(tp, instances) {
@@ -76,10 +79,10 @@ object AtlasCommand : Command("atlas") {
 
             val instance = context.get(instances)
 
-            if (player.instance?.uniqueId != instance.uniqueId)
-                player.setInstance(instance)
+            if (player.instance?.uniqueId != instance.instanceContainer.uniqueId)
+                player.setInstance(instance.instanceContainer)
 
-            instance.asAtlas?.spawn?.let {
+            instance?.spawn?.let {
                 player.teleport(it)
             } ?: let {
                 player.teleport(Pos(0.0, 300.0, 0.0))

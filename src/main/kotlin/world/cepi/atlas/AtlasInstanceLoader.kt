@@ -3,20 +3,24 @@ package world.cepi.atlas
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
+import org.slf4j.LoggerFactory
 import world.cepi.kstom.Manager
 
 object AtlasInstanceLoader {
 
+    val logger = LoggerFactory.getLogger(this::class.java)
+
     val instance by lazy {
 
-        // If any loaded instance isnt an atlas instance (from other extensions) don't continue
-        if (Manager.instance.instances.any { !it.isAtlas }) return@lazy null
-
         // Find the first loaded atlas instance
-        val atlasInstance = Manager.instance.instances.first().asAtlas
+        val atlasInstance = AtlasInstance.instances.values.firstOrNull()
+            ?: run {
+                logger.warn("No Atlas instance found.")
+                return@lazy null
+            }
 
         // Load 0 / 0
-        atlasInstance?.instanceContainer?.loadChunk(0, 0)
+        atlasInstance.instanceContainer.loadChunk(0, 0)
 
         // And return the instance
         atlasInstance
