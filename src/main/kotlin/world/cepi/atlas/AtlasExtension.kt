@@ -14,8 +14,6 @@ import world.cepi.kstom.event.listenOnly
 class AtlasExtension : Extension() {
 
     override fun initialize() {
-
-
         AtlasCommand.register()
 
         AtlasInstance.loadInstances()
