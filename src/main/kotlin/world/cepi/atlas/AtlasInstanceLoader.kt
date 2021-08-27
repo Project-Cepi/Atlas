@@ -1,10 +1,8 @@
 package world.cepi.atlas
 
-import net.minestom.server.entity.Player
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
 import org.slf4j.LoggerFactory
-import world.cepi.kstom.Manager
 
 object AtlasInstanceLoader {
 
