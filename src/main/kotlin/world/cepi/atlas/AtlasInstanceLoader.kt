@@ -24,7 +24,7 @@ object AtlasInstanceLoader {
         atlasInstance
     }
 
-    fun onSpawn(event: PlayerSpawnEvent) = instance?.let {
+    fun onSpawn(event: PlayerSpawnEvent) = event.spawnInstance.asAtlas?.let {
 
         // Set the respawn point to the instance's (serializable) spawn
         event.player.respawnPoint = it.spawn
