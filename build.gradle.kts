@@ -40,7 +40,7 @@ dependencies {
     compileOnly("com.github.Project-Cepi:KStom:4ca1f4172c")
 
     // import kotlinx serialization
-    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 }
 
 tasks.withType<Test> {
