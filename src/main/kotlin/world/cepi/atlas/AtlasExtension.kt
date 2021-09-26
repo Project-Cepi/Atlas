@@ -26,7 +26,9 @@ class AtlasExtension : Extension() {
             "minecraft:beacon",
             "minecraft:furnace",
             "minecraft:campfire",
-            "minecraft:barrel"
+            "minecraft:barrel",
+            "minecraft:hopper",
+            "minecraft:beehive"
         ).forEach {
             Manager.block.registerHandler(it) { BlockHandler.Dummy.get(it) }
         }
