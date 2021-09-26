@@ -28,7 +28,8 @@ class AtlasExtension : Extension() {
             "minecraft:campfire",
             "minecraft:barrel",
             "minecraft:hopper",
-            "minecraft:beehive"
+            "minecraft:beehive",
+            "minecraft:chest"
         ).forEach {
             Manager.block.registerHandler(it) { BlockHandler.Dummy.get(it) }
         }
