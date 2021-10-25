@@ -53,6 +53,10 @@ object AtlasCommand : Kommand({
     val loaders = ArgumentType.Word("loader").from(*Loader.values().map { it.name }.toTypedArray())
     loaders.defaultValue = Supplier { Loader.FALSE.name }
 
+    playerCallbackFailMessage = {
+        it.sendMessage(Component.text("You are not a player!"))
+    }
+
     syntax(list) {
         MinecraftServer.getInstanceManager().instances.forEach {
             sender.sendMessage(Component.text(it.uniqueId.toString()))
@@ -64,29 +68,16 @@ object AtlasCommand : Kommand({
         sender.sendMessage(Component.text("UUID: ${instance.instanceContainer.uniqueId}"))
     }
 
-    syntax(info) {
-
-        val player = sender as Player
+    syntax(info).onlyPlayers {
         player.sendMessage(Component.text("UUID: ${player.instance?.uniqueId}"))
     }
 
-    syntax(setspawn, instances) {
-
-        if (sender !is Player) {
-            sender.sendMessage(Component.text("You are not a player!"))
-            return@syntax
-        }
-
+    syntax(setspawn, instances).onlyPlayers {
         val instance = context.get(instances)
         setSpawn(player, instance.instanceContainer)
     }
 
-    syntax(tp, instances) {
-        if (sender !is Player) {
-            sender.sendMessage(Component.text("You are not a player!"))
-            return@syntax
-        }
-
+    syntax(tp, instances).onlyPlayers {
         val instance = context.get(instances)
 
         if (player.instance?.uniqueId != instance.instanceContainer.uniqueId)
@@ -101,11 +92,7 @@ object AtlasCommand : Kommand({
         sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
     }
 
-    syntax(tp) {
-        if (sender !is Player) {
-            sender.sendMessage(Component.text("You are not a player!"))
-            return@syntax
-        }
+    syntax(tp).onlyPlayers {
 
         player.instance?.asAtlas?.spawn?.let {
             player.teleport(it)
@@ -113,13 +100,7 @@ object AtlasCommand : Kommand({
         }
     }
 
-    syntax(setspawn) {
-
-        if (sender !is Player) {
-            sender.sendMessage(Component.text("You are not a player!"))
-            return@syntax
-        }
-
+    syntax(setspawn).onlyPlayers {
         setSpawn(player, player.instance)
     }
 
