@@ -8,13 +8,13 @@ object AtlasInstanceLoader {
 
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    val instance by lazy {
+    val instance = run instance@ {
 
         // Find the first loaded atlas instance
         val atlasInstance = AtlasInstance.instances.values.firstOrNull()
             ?: run {
                 logger.warn("No Atlas instance found.")
-                return@lazy null
+                return@instance null
             }
 
         // Load 0 / 0
