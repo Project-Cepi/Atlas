@@ -18,6 +18,7 @@ import world.cepi.kstom.serializer.PositionSerializer
 import java.util.*
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.*
 import kotlin.reflect.full.primaryConstructor
 
 /**
@@ -91,10 +92,10 @@ data class AtlasInstance(
                 private val serializer: KSerializer<Map<String, AtlasInstance>> = MapSerializer(String.serializer(), serializer())
 
                 /** A file representation of the instance configuration for atlas*/
-                private val instanceFile = File("./atlas/atlas.json")
+                private val instanceFile = Path.of("./atlas/atlas.json")
 
                 /** The folder where all atlas instances are contained*/
-                private val instanceFolder = File("./atlas")
+                private val instanceFolder = Path.of("./atlas")
 
                 /** The current cache of the AtlasInstances. */
                 val instances: MutableMap<String, AtlasInstance> = mutableMapOf()
@@ -102,7 +103,7 @@ data class AtlasInstance(
                 /** Update the config file of Atlas. Refer to [instanceFile] for more information*/
                 fun update() {
                         if (!instanceFile.exists())
-                                instanceFile.createNewFile()
+                                instanceFile.createFile()
                         instanceFile.writeText(Json.encodeToString(serializer, instances))
                 }
 
@@ -112,7 +113,7 @@ data class AtlasInstance(
                 }
 
                 init {
-                        instanceFolder.mkdirs()
+                        instanceFolder.createDirectories()
                         if (!instanceFile.exists()) update()
                 }
 
