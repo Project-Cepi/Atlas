@@ -1,8 +1,10 @@
 package world.cepi.atlas
 
 import net.minestom.server.extensions.Extension
+import net.minestom.server.instance.block.Block
 import net.minestom.server.instance.block.BlockHandler
 import world.cepi.atlas.commands.AtlasCommand
+import world.cepi.atlas.handler.BannerHandler
 import world.cepi.atlas.handler.SignHandler
 import world.cepi.atlas.handler.SkullHandler
 import world.cepi.kstom.Manager
@@ -32,6 +34,10 @@ class AtlasExtension : Extension() {
 
         Manager.block.registerHandler("minecraft:sign") { SignHandler }
         Manager.block.registerHandler("minecraft:skull") { SkullHandler }
+
+        Block.values().filter { it.name().contains("banner") }.forEach {
+            Manager.block.registerHandler(it.namespace().toString()) { BannerHandler }
+        }
 
         logger.info("[Atlas] has been enabled!")
     }
