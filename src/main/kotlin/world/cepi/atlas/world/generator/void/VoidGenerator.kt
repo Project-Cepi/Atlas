@@ -18,10 +18,6 @@ class VoidGenerator(
         batch.setBlock(0, 0, 0, Block.AIR)
     }
 
-    override fun fillBiomes(biomes: Array<out Biome>, chunkX: Int, chunkZ: Int) {
-        Arrays.fill(biomes, Manager.biome.getById(0))
-    }
-
     override fun getPopulators(): MutableList<ChunkPopulator> = chunkPopulators.toMutableList()
 
 }

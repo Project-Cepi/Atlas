@@ -9,15 +9,17 @@ import world.cepi.atlas.handler.SignHandler
 import world.cepi.atlas.handler.SkullHandler
 import world.cepi.kstom.Manager
 import world.cepi.kstom.event.listenOnly
+import world.cepi.kstom.util.log
+import world.cepi.kstom.util.node
 
 class AtlasExtension : Extension() {
 
-    override fun initialize() {
+    override fun initialize(): LoadStatus {
         AtlasCommand.register()
 
         AtlasInstance.loadInstances()
-        eventNode.listenOnly(AtlasInstanceLoader::onSpawn)
-        eventNode.listenOnly(AtlasInstanceLoader::loadEvent)
+        node.listenOnly(AtlasInstanceLoader::onSpawn)
+        node.listenOnly(AtlasInstanceLoader::loadEvent)
 
         arrayOf(
             "minecraft:smoker",
@@ -39,14 +41,16 @@ class AtlasExtension : Extension() {
             Manager.block.registerHandler(it.namespace().toString()) { BannerHandler }
         }
 
-        logger.info("[Atlas] has been enabled!")
+        log.info("[Atlas] has been enabled!")
+
+        return LoadStatus.SUCCESS
     }
 
     override fun terminate() {
 
         AtlasCommand.unregister()
 
-        logger.info("[Atlas] has been disabled!")
+        log.info("[Atlas] has been disabled!")
     }
 
 }
