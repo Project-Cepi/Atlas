@@ -55,7 +55,9 @@ data class AtlasInstance(
 
                 instanceContainer = instanceManager.createInstanceContainer()
 
-                instanceContainer.chunkGenerator = generator.generator.invoke(name)
+                instanceContainer.setGenerator {
+                        generator.generator.invoke(it, name)
+                }
                 instanceContainer.enableAutoChunkLoad(autoChunkLoad)
 
                 instanceContainer.chunkLoader = loader.loader.java

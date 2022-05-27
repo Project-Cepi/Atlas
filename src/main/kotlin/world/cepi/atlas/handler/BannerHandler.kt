@@ -11,7 +11,7 @@ object BannerHandler : BlockHandler {
 
     override fun getBlockEntityTags(): MutableCollection<Tag<*>> {
         return mutableListOf(
-            Tag.NBT<NBTCompound>("Patterns")
+            Tag.NBT("Patterns")
         )
     }
 

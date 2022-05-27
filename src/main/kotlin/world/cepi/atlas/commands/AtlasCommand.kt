@@ -68,16 +68,16 @@ object AtlasCommand : Kommand({
         sender.sendMessage(Component.text("UUID: ${instance.instanceContainer.uniqueId}"))
     }
 
-    syntax(info).onlyPlayers {
+    syntax(info) {
         player.sendMessage(Component.text("UUID: ${player.instance?.uniqueId}"))
-    }
+    }.onlyPlayers()
 
-    syntax(setspawn, instances).onlyPlayers {
+    syntax(setspawn, instances) {
         val instance = context.get(instances)
         setSpawn(player, instance.instanceContainer)
-    }
+    }.onlyPlayers()
 
-    syntax(tp, instances).onlyPlayers {
+    syntax(tp, instances) {
         val instance = context.get(instances)
 
         if (player.instance?.uniqueId != instance.instanceContainer.uniqueId)
@@ -90,19 +90,19 @@ object AtlasCommand : Kommand({
         }
 
         sender.sendMessage(Component.text("Teleported to the instance's spawn!"))
-    }
+    }.onlyPlayers()
 
-    syntax(tp).onlyPlayers {
+    syntax(tp) {
 
         player.instance?.asAtlas?.spawn?.let {
             player.teleport(it)
             player.sendMessage(Component.text("Teleported to the instance's spawn!"))
         }
-    }
+    }.onlyPlayers()
 
-    syntax(setspawn).onlyPlayers {
+    syntax(setspawn) {
         setSpawn(player, player.instance)
-    }
+    }.onlyPlayers()
 
     syntax(generate, loaders) {
 

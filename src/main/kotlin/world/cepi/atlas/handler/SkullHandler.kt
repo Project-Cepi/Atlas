@@ -10,8 +10,8 @@ object SkullHandler : BlockHandler {
 
     override fun getBlockEntityTags(): MutableCollection<Tag<*>> {
         return mutableListOf(
-            Tag.NBT<NBTCompound>("SkullOwner"),
-            Tag.NBT<NBTCompound>("Id")
+            Tag.NBT("SkullOwner"),
+            Tag.NBT("Id")
         )
     }
 }
