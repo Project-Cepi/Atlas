@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.jetbrains.dokka") version "1.5.31"
 
-    kotlin("plugin.serialization") version "1.4.21"
+    kotlin("plugin.serialization") version "1.9.23"
     `maven-publish`
 
     // Apply the application plugin to add support for building a jar
